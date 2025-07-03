@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İnfaz Uygulamaları</title>
+<style>
+    /* --- Genel Sayfa Stilleri --- */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f2f5;
+        color: #333;
+    }
+
+    .page-title {
+        text-align: center;
+        color: #34495e;
+        margin-bottom: 25px;
+        font-size: 2em;
+    }
+
+    .main-layout {
+        display: flex;
+        gap: 25px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* --- Sol Menü (Sidebar) Stilleri --- */
+    .sidebar-nav {
+        flex: 0 0 280px; /* Kenar çubuğu genişliği, büyümez, küçülmez */
+    }
+
+    .nav-btn {
+        display: block;
+        width: 100%;
+        background-color: #ffffff;
+        color: #34495e;
+        padding: 15px 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        font-size: 16px;
+        text-align: left;
+        transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+        font-weight: 500;
+    }
+
+    .nav-btn:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+        border-color: #3498db;
+    }
+    
+    .nav-btn.active {
+        background-color: #3498db;
+        color: white;
+        border-color: #2980b9;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    /* --- Sağ İçerik Alanı Stilleri --- */
+    .main-content {
+        flex-grow: 1; /* Kalan tüm alanı kapla */
+    }
+
+    .app-content {
+        background-color: #ffffff;
+        padding: 25px 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* --- Uygulama 1: Basit Tarih Hesaplayıcı Stilleri --- */
+    #app1-container { font-family: sans-serif; }
+    #app1-container h1 { margin-top:0; }
+    #app1-container label { display: block; margin-bottom: 5px; font-weight: bold; }
+    #app1-container input[type="text"],
+    #app1-container input[type="number"] { width: 250px; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+    #app1-container button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; font-size: 1em; }
+    #app1-container button:hover { background-color: #3e8e41; }
+    #app1-container #result1 { margin-top: 20px; font-weight: bold; font-size: 1.1em; background-color: #e8f5e9; padding: 10px; border-radius: 4px; }
+    #app1-container .error { color: #d32f2f; font-weight: bold; margin-top: 10px; }
+
+    /* --- Uygulama 2: Gelişmiş Tarih Hesaplayıcı Stilleri --- */
+    :root {
+        --primary-color: #3498db; --secondary-color: #2ecc71; --danger-color: #e74c3c;
+        --warning-color: #f39c12; --light-color: #ecf0f1; --dark-color: #34495e;
+        --border-radius: 8px; --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #app2-container { line-height: 1.6; }
+    #app2-container h1 { color: var(--dark-color); text-align: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid var(--primary-color); margin-top:0;}
+    #app2-container h3 { color: var(--primary-color); margin-top: 0; }
+    #app2-container label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark-color); }
+    #app2-container input[type="number"], #app2-container input[type="date"], #app2-container select { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: var(--border-radius); box-sizing: border-box; font-size: 16px; transition: border-color 0.3s; }
+    #app2-container input[type="number"]:focus, #app2-container input[type="date"]:focus, #app2-container select:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+    #app2-container button { background-color: var(--primary-color); color: white; padding: 12px 24px; border: none; border-radius: var(--border-radius); cursor: pointer; margin-bottom: 15px; font-size: 16px; font-weight: 600; transition: all 0.3s; box-shadow: var(--box-shadow); }
+    #app2-container button:hover { background-color: #2980b9; transform: translateY(-2px); }
+    #app2-container button:active { transform: translateY(0); }
+    #app2-container #result2 { margin-top: 30px; padding: 20px; border: 2px solid #ddd; border-radius: var(--border-radius); background-color: #fdfdfd; }
+    #app2-container .green-bg { background-color: var(--secondary-color); color: white; padding: 8px 15px; display: inline-block; border-radius: var(--border-radius); font-weight: bold; }
+    #app2-container .red-bg { background-color: var(--danger-color); color: white; padding: 8px 15px; display: inline-block; border-radius: var(--border-radius); font-weight: bold; }
+    #app2-container .date-range { margin: 20px 0; padding: 20px; border: 2px solid #eee; border-radius: var(--border-radius); background-color: #f8f9fa; }
+    #app2-container .input-group { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;}
+    #app2-container .input-group input { flex: 1; min-width: 150px; }
+    #app2-container .input-group span { white-space: nowrap; font-weight: 600; color: var(--dark-color); }
+    #app2-container .period-container { margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: var(--border-radius); }
+    #app2-container .period-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; padding: 10px; background-color: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
+    #app2-container .period-row input, #app2-container .period-row select { margin-bottom: 0; flex: 1; min-width: 100px;}
+    #app2-container .add-period-btn { background-color: var(--secondary-color); width: 100%; margin-top: 10px; }
+    #app2-container .add-period-btn:hover { background-color: #27ae60; }
+    #app2-container .remove-period-btn { background-color: var(--danger-color); padding: 10px 15px !important; margin-left: auto; flex-grow: 0 !important; flex-basis: auto !important; }
+    #app2-container .remove-period-btn:hover { background-color: #c0392b; }
+    #app2-container .result-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+    #app2-container .result-item:last-child { border-bottom: none; }
+    #app2-container .tooltip { position: relative; display: inline-block; cursor: help; }
+    #app2-container .tooltip .tooltiptext { visibility: hidden; width: 200px; background-color: var(--dark-color); color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 14px; font-weight: normal; }
+    #app2-container .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    #app2-container #result2 { animation: fadeIn 0.5s ease-out; }
+
+    /* --- Uygulama 3: Hatırlatıcı Stilleri --- */
+    #app3-container { font-family: sans-serif; }
+    #app3-container h1 { margin-top:0; }
+    #app3-container label { display: block; margin-bottom: 5px; font-weight: bold; }
+    #app3-container input[type="text"], #app3-container input[type="number"], #app3-container select { width: 100%; max-width: 350px; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em;}
+    #app3-container button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; font-size: 1em;}
+    #app3-container button:hover { background-color: #3e8e41; }
+    #app3-container #reminders { margin-top: 20px; }
+    #app3-container .reminder-item { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+    #app3-container .reminder-item.overdue { background-color: #f44336; color: white; border-color: #d32f2f; animation: blinker 1.5s linear infinite; }
+    @keyframes blinker { 50% { background-color: white; color: black; } }
+    #app3-container .reminder-item.done { background-color: #f5f5f5; color: #757575; border-left: 5px solid #4caf50; }
+    #app3-container .reminder-item span { flex-grow: 1; }
+    #app3-container .reminder-item button { margin: 0; }
+    #app3-container .error { color: #d32f2f; font-weight: bold; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">İNFAZ İÇİN SIK KULLANILAN UYGULAMALAR</h1>
+
+<div class="main-layout">
+    <nav class="sidebar-nav">
+        <button id="nav-btn-1" class="nav-btn active" onclick="showApp('app1-container', this)">Basit Tarih Hesaplayıcı</button>
+        <button id="nav-btn-2" class="nav-btn" onclick="showApp('app2-container', this)">Gelişmiş Tarih Hesaplayıcı</button>
+        <button id="nav-btn-3" class="nav-btn" onclick="showApp('app3-container', this)">Hatırlatıcı KF1500</button>
+    </nav>
+
+    <main class="main-content">
+        <div id="app1-container" class="app-content">
+            <h1>Tarih Hesaplayıcı</h1>
+            <label for="date1">1. Tarih (GG/AA/YYYY veya GG.AA.YYYY):</label>
+            <input type="text" id="date1" name="date1" placeholder="">
+            <label for="date2">2. Tarih (GG/AA/YYYY veya GG.AA.YYYY):</label>
+            <input type="text" id="date2" name="date2" placeholder="">
+            <label for="days">Gün Ekle/Çıkar (1. Tarihten):</label>
+            <input type="number" id="days" name="days">
+            <br>
+            <button onclick="addSubtractDays()">Gün Ekle/Çıkar</button>
+            <button onclick="calculateDifference()">Fark Hesapla</button>
+            <div id="result1"></div>
+            <div id="error1" class="error"></div>
+        </div>
+
+        <div id="app2-container" class="app-content hidden">
+            <h1>Gelişmiş Tarih Hesaplayıcı</h1>
+            <div class="period-container" id="periodsContainer">
+                <h3>Dönemler <span class="tooltip">ℹ️<span class="tooltiptext">Her dönem için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
+                <div class="period-row">
+                    <input type="number" class="period-years" value="0" placeholder="Yıl" min="0">
+                    <input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11">
+                    <input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30">
+                    <select class="period-ratio">
+                        <option value="0.5">1/2</option>
+                        <option value="0.6666666666666666">2/3</option>
+                        <option value="0.75">3/4</option>
+                    </select>
+                    <button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>
+                </div>
+            </div>
+            <button class="add-period-btn" onclick="addPeriod()">+ Yeni Dönem Ekle</button>
+            <div class="date-range">
+                <h3>Cezaevi Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
+                <div class="input-group">
+                    <div style="flex: 1;"><label>Başlangıç Tarihi:</label><input type="date" id="prisonStart"></div>
+                    <div style="flex: 1;"><label>Bitiş Tarihi:</label><input type="date" id="prisonEnd"></div>
+                </div>
+                <div class="input-group"><span>VEYA gün olarak girin:</span><input type="number" id="prisonDays" value="0" min="0" placeholder="Gün"></div>
+            </div>
+            <label for="startDate">Başlangıç Tarihi:</label>
+            <input type="date" id="startDate">
+            <button onclick="calculateDate()" style="background-color: var(--secondary-color); width: 100%; padding: 15px;"><span style="font-size: 18px;">⏳ HESAPLA</span></button>
+            <div id="result2"></div>
+        </div>
+
+        <div id="app3-container" class="app-content hidden">
+            <h1>Hatırlatıcı KF1500</h1>
+            <label for="fileNumber">Dosya Numarası:</label>
+            <input type="text" id="fileNumber" name="fileNumber">
+            <label for="correspondenceType">Ne hatırlamak istiyorsun?</label>
+            <select id="correspondenceType" name="correspondenceType">
+                <option value="Hapse Çevirme">Hapse Çevirme</option>
+                <option value="Yakalama">Yakalama</option>
+                <option value="Tekit">Tekit</option>
+            </select>
+            <label for="dueDateType">Gün mü Tarih mi?:</label>
+            <select id="dueDateType" name="dueDateType">
+                <option value="days">... gün içinde</option>
+                <option value="date">... tarihinde (GG/AA/YYYY)</option>
+            </select>
+            <label for="dueDateValue">Gün ya da Tarihi Gir:</label>
+            <input type="text" id="dueDateValue" name="dueDateValue" placeholder="örn: 30 veya 01/01/2025">
+            <br>
+            <button onclick="addReminder()">Hatırlatma Ekle</button>
+            <button onclick="removeCompleted()" style="background-color:#ff5722">Tamamlananları Sil</button>
+            <h2>İşlem Yapılacaklar:</h2>
+            <div id="reminders"></div>
+            <div id="error3" class="error"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- GENEL KONTROL FONKSİYONU ---
+    // Bu fonksiyon tüm buton tıklamalarını yönetir.
+    function showApp(appIdToShow, clickedButton) {
+        // 1. Tüm uygulama pencerelerini gizle
+        const allApps = document.querySelectorAll('.app-content');
+        allApps.forEach(app => {
+            app.classList.add('hidden');
+        });
+
+        // 2. Tüm butonlardan 'active' stilini kaldır
+        const allButtons = document.querySelectorAll('.nav-btn');
+        allButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+
+        // 3. Sadece tıklanan butona 'active' stilini ekle
+        clickedButton.classList.add('active');
+
+        // 4. Sadece ilgili uygulama penceresini göster
+        const appToShow = document.getElementById(appIdToShow);
+        if (appToShow) {
+            appToShow.classList.remove('hidden');
+        }
+    }
+
+    // --- UYGULAMA 1: BASİT TARİH HESAPLAYICI SCRIPTLERI ---
+    function parseDate1(dateStr) {
+        let dateParts = dateStr.split(/[\/\.]/); // / veya . ile ayır
+        if (dateParts.length === 3) {
+            let day = parseInt(dateParts[0], 10); let month = parseInt(dateParts[1], 10); let year = parseInt(dateParts[2], 10);
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); }
+        }
+        if (dateStr.length === 8 && /^\d+$/.test(dateStr)) {
+            let day = parseInt(dateStr.substring(0, 2), 10); let month = parseInt(dateStr.substring(2, 4), 10); let year = parseInt(dateStr.substring(4, 8), 10);
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); }
+        }
+        return null;
+    }
+    function formatDate1(date) { return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`; }
+    function addSubtractDays() {
+        const resultDiv = document.getElementById("result1"); const errorDiv = document.getElementById("error1");
+        resultDiv.textContent = ""; errorDiv.textContent = "";
+        const date1 = parseDate1(document.getElementById("date1").value); const daysToAdd = parseInt(document.getElementById("days").value);
+        if (!date1) { errorDiv.textContent = "Geçersiz Tarih 1 formatı. GG/AA/YYYY kullanın."; return; }
+        if (isNaN(daysToAdd)) { errorDiv.textContent = "Lütfen eklenecek/çıkarılacak gün sayısı için geçerli bir sayı girin."; return; }
+        date1.setDate(date1.getDate() + daysToAdd);
+        resultDiv.textContent = "Yeni Tarih: " + formatDate1(date1);
+    }
+    function calculateDifference() {
+        const resultDiv = document.getElementById("result1"); const errorDiv = document.getElementById("error1");
+        resultDiv.textContent = ""; errorDiv.textContent = "";
+        const date1 = parseDate1(document.getElementById("date1").value); const date2 = parseDate1(document.getElementById("date2").value);
+        if (!date1) { errorDiv.textContent = "Geçersiz Tarih 1 formatı. GG/AA/YYYY kullanın."; return; }
+        if (!date2) { errorDiv.textContent = "Geçersiz Tarih 2 formatı. GG/AA/YYYY kullanın."; return; }
+        const diffInMs = Math.abs(date2.getTime() - date1.getTime());
+        resultDiv.textContent = "Gün cinsinden fark: " + Math.ceil(diffInMs / 86400000);
+    }
+
+    // --- UYGULAMA 2: GELİŞMİŞ TARİH HESAPLAYICI SCRIPTLERI ---
+    function addPeriod() {
+        const container = document.getElementById('periodsContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'period-row';
+        newRow.innerHTML = `<input type="number" class="period-years" value="0" placeholder="Yıl" min="0"><input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11"><input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30"><select class="period-ratio"><option value="0.5">1/2</option><option value="0.6666666666666666">2/3</option><option value="0.75">3/4</option></select><button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>`;
+        container.appendChild(newRow);
+    }
+    function calculateDate() {
+        if (!document.getElementById("startDate").value) { alert("Lütfen başlangıç tarihi seçin."); return; }
+        const startDate = new Date(document.getElementById("startDate").value); let totalCalculatedDays = 0;
+        document.querySelectorAll('#app2-container .period-row').forEach(row => {
+            const periodDays = (parseInt(row.querySelector('.period-years').value) || 0) * 365 + (parseInt(row.querySelector('.period-months').value) || 0) * 30 + (parseInt(row.querySelector('.period-days').value) || 0);
+            totalCalculatedDays += Math.floor(periodDays * parseFloat(row.querySelector('.period-ratio').value));
+        });
+        let prisonDays = parseInt(document.getElementById("prisonDays").value) || 0;
+        if (prisonDays === 0 && document.getElementById("prisonStart").value && document.getElementById("prisonEnd").value) { prisonDays = Math.max(0, Math.floor((new Date(document.getElementById("prisonEnd").value) - new Date(document.getElementById("prisonStart").value)) / 86400000) + 1); }
+        totalCalculatedDays = Math.max(0, totalCalculatedDays - prisonDays);
+        const resultDate = new Date(startDate); resultDate.setDate(startDate.getDate() + totalCalculatedDays);
+        const resultDateString = formatDate2(resultDate);
+        document.getElementById("result2").innerHTML = `<div class="result-item"><h3>Hesaplama Sonuçları</h3><p><strong>Hesaplanan Toplam Gün:</strong> ${totalCalculatedDays} <small>(Cezaevi dönemi ${prisonDays} gün düşüldü)</small></p><p><strong>Sonuç Tarihi:</strong> ${resultDateString}</p></div><div class="date-range"><h3>Yıl Çıkarma <span class="tooltip">ℹ️<span class="tooltiptext">Mahkeme tarafından belirlenen yıl çıkarma miktarı</span></span></h3><select id="yearSubtraction" class="custom-select"><option value="3">3 Yıl</option><option value="1">1 Yıl</option></select></div><div class="date-range"><h3>Denetim Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Denetimli serbestlik süresini tarih aralığı veya gün olarak giriniz</span></span></h3><div class="input-group"><div style="flex: 1;"><label>Başlangıç Tarihi:</label><input type="date" id="supervisionStart"></div><div style="flex: 1;"><label>Bitiş Tarihi:</label><input type="date" id="supervisionEnd"></div></div><div class="input-group"><span>VEYA gün olarak girin:</span><input type="number" id="supervisionDays" value="0" min="0" placeholder="Gün"></div></div><button onclick="finalComparison('${resultDateString}', ${prisonDays})" style="background-color: var(--warning-color); width: 100%;"><span style="font-size: 18px;">🔍 NİHAİ TARİHİ HESAPLA</span></button>`;
+    }
+    function finalComparison(resultDateString, prisonDays) {
+        const parts = resultDateString.split('/'); const resultDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        let supervisionDays = parseInt(document.getElementById("supervisionDays").value) || 0;
+        if (supervisionDays === 0 && document.getElementById("supervisionStart").value && document.getElementById("supervisionEnd").value) { supervisionDays = Math.max(0, Math.floor((new Date(document.getElementById("supervisionEnd").value) - new Date(document.getElementById("supervisionStart").value)) / 86400000) + 1); }
+        const subtractionYears = parseInt(document.getElementById("yearSubtraction").value); const adjustedYearDays = Math.max(0, (subtractionYears * 365) - supervisionDays);
+        const finalDate = new Date(resultDate); finalDate.setDate(resultDate.getDate() - adjustedYearDays);
+        const finalDateString = formatDate2(finalDate); const startDate = new Date(document.getElementById("startDate").value);
+        const diffInDays = Math.floor((finalDate - startDate) / 86400000) + 1;
+        const comparisonResult = diffInDays <= 0 ? '<span class="green-bg">✅ Giriş-Çıkış (Tahliye günü)</span>' : `<span class="red-bg">⏳ ${diffInDays} gün yatar</span>`;
+        document.getElementById("result2").innerHTML += `<div class="result-item" style="margin-top: 20px; background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);"><h3>Nihai Sonuç</h3><p><strong>Düzeltilmiş Yıl Günü:</strong> ${adjustedYearDays} <small>(${subtractionYears} yıl × 365 - ${supervisionDays} denetim günü)</small></p><p><strong>Nihai Tahliye Tarihi:</strong> <span style="font-weight: bold; font-size: 18px;">${finalDateString}</span></p><p><strong>Karşılaştırma:</strong> ${comparisonResult}</p></div>`;
+    }
+    function formatDate2(date) { return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`; }
+
+    // --- UYGULAMA 3: HATIRLATICI SCRIPTLERI ---
+    let reminders = [];
+    function loadReminders() {
+        const savedReminders = localStorage.getItem('reminders');
+        if (savedReminders) { try { reminders = JSON.parse(savedReminders) || []; } catch(e) { reminders = []; } displayReminders(); }
+    }
+    function saveReminders() { localStorage.setItem('reminders', JSON.stringify(reminders)); }
+    function addReminder() {
+        const errorDiv = document.getElementById("error3"); errorDiv.textContent = "";
+        const fileNumber = document.getElementById("fileNumber").value, correspondenceType = document.getElementById("correspondenceType").value, dueDateType = document.getElementById("dueDateType").value, dueDateValue = document.getElementById("dueDateValue").value;
+        if (!fileNumber || !correspondenceType || !dueDateValue) { errorDiv.textContent = "Lütfen tüm alanları doldurun."; return; }
+        let dueDate;
+        if (dueDateType === "days") {
+            const days = parseInt(dueDateValue); if (isNaN(days)) { errorDiv.textContent = "Geçersiz gün sayısı."; return; }
+            const today = new Date(); today.setDate(today.getDate() + days); dueDate = formatDate3(today);
+        } else {
+            dueDate = parseDueDate3(dueDateValue); if (!dueDate) { errorDiv.textContent = "Geçersiz tarih formatı. GG/AA/YYYY kullanın."; return; }
+        }
+        reminders.push({ fileNumber, correspondenceType, dueDate, done: false });
+        saveReminders(); displayReminders();
+        document.getElementById("fileNumber").value = ""; document.getElementById("dueDateValue").value = "";
+    }
+    function parseDueDate3(dateStr) {
+        const p = dateStr.split("/");
+        if (p.length === 3) { const date = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0])); if (!isNaN(date.getTime())) return formatDate3(date); }
+        return null;
+    }
+    function formatDate3(date) { if (date instanceof Date) return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`; return date; }
+    function displayReminders() {
+        const remindersDiv = document.getElementById("reminders"); remindersDiv.innerHTML = "";
+        let hasOverdueTask = false;
+        reminders.forEach((reminder, index) => {
+            const reminderDiv = document.createElement("div"); reminderDiv.classList.add("reminder-item");
+            const dueDateObj = new Date(reminder.dueDate.split('/').reverse().join('-'));
+            if (dueDateObj < new Date() && !reminder.done) { reminderDiv.classList.add("overdue"); hasOverdueTask = true; }
+            if (reminder.done) { reminderDiv.classList.add("done"); }
+            reminderDiv.innerHTML = `<span><b>Dosya:</b> ${reminder.fileNumber}, <b>Tür:</b> ${reminder.correspondenceType}, <b>Son Tarih:</b> ${reminder.dueDate}</span><button onclick="markDone(${index})">${reminder.done ? 'Geri Al' : 'Tamamlandı'}</button>`;
+            remindersDiv.appendChild(reminderDiv);
+        });
+        if (hasOverdueTask && typeof Notification !== 'undefined' && Notification.permission === "granted" && !document.hidden) { showNotification("Süresi geçmiş hatırlatma var!"); }
+        saveReminders();
+    }
+    function markDone(index) { reminders[index].done = !reminders[index].done; saveReminders(); displayReminders(); }
+    function removeCompleted() { reminders = reminders.filter(r => !r.done); saveReminders(); displayReminders(); }
+    function showNotification(message) {
+        if (typeof Notification !== 'undefined' && Notification.permission !== "denied") { Notification.requestPermission().then(p => { if (p === "granted") new Notification(message); }); }
+    }
+    function checkOverdueTasks() {
+        reminders.forEach((reminder, index) => {
+            const reminderDiv = document.querySelector(`#reminders .reminder-item:nth-child(${index + 1})`);
+            if (reminderDiv) {
+                const dueDateObj = new Date(reminder.dueDate.split('/').reverse().join('-'));
+                if (dueDateObj < new Date() && !reminder.done) reminderDiv.classList.add("overdue");
+                else reminderDiv.classList.remove("overdue");
+            }
+        });
+    }
+
+    // --- SAYFA YÜKLENDİĞİNDE ÇALIŞACAK KODLAR ---
+    window.onload = () => {
+        // Sayfa ilk açıldığında herhangi bir işlem yapmaya gerek yok çünkü
+        // ilk buton ve ilk uygulama HTML içinde zaten varsayılan olarak aktif/görünür durumda.
+        
+        // Sadece Uygulama 3 için başlangıç fonksiyonlarını çalıştır
+        loadReminders();
+        if (typeof Notification !== 'undefined') Notification.requestPermission();
+        checkOverdueTasks();
+        setInterval(checkOverdueTasks, 60000); // Her dakika kontrol et
+    };
+</script>
+
+</body>
+</html>
