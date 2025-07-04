@@ -180,7 +180,7 @@
         <div id="app2-container" class="app-content hidden">
             <h1>Gelişmiş Tarih Hesaplayıcı</h1>
             <div class="period-container" id="periodsContainer">
-                <h3>Dönemler <span class="tooltip">ℹ️<span class="tooltiptext">Her dönem için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
+                <h3>CEZALAR <span class="tooltip">ℹ️<span class="tooltiptext">Her ceza için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
                 <div class="period-row">
                     <input type="number" class="period-years" value="0" placeholder="Yıl" min="0">
                     <input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11">
@@ -193,9 +193,9 @@
                     <button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>
                 </div>
             </div>
-            <button class="add-period-btn" onclick="addPeriod()">+ Yeni Dönem Ekle</button>
+            <button class="add-period-btn" onclick="addPeriod()">+ Yeni Ceza Ekle</button>
             <div class="date-range">
-                <h3>Cezaevi Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
+                <h3>Cezaevinde Geçirdiği Süreler <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
                 <div class="input-group">
                     <div style="flex: 1;"><label>Başlangıç Tarihi:</label><input type="date" id="prisonStart"></div>
                     <div style="flex: 1;"><label>Bitiş Tarihi:</label><input type="date" id="prisonEnd"></div>
@@ -309,7 +309,7 @@
         totalCalculatedDays = Math.max(0, totalCalculatedDays - prisonDays);
         const resultDate = new Date(startDate); resultDate.setDate(startDate.getDate() + totalCalculatedDays);
         const resultDateString = formatDate2(resultDate);
-        document.getElementById("result2").innerHTML = `<div class="result-item"><h3>Hesaplama Sonuçları</h3><p><strong>Hesaplanan Toplam Gün:</strong> ${totalCalculatedDays} <small>(Cezaevi dönemi ${prisonDays} gün düşüldü)</small></p><p><strong>Sonuç Tarihi:</strong> ${resultDateString}</p></div><div class="date-range"><h3>Yıl Çıkarma <span class="tooltip">ℹ️<span class="tooltiptext">Mahkeme tarafından belirlenen yıl çıkarma miktarı</span></span></h3><select id="yearSubtraction" class="custom-select"><option value="3">3 Yıl</option><option value="1">1 Yıl</option></select></div><div class="date-range"><h3>Denetim Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Denetimli serbestlik süresini tarih aralığı veya gün olarak giriniz</span></span></h3><div class="input-group"><div style="flex: 1;"><label>Başlangıç Tarihi:</label><input type="date" id="supervisionStart"></div><div style="flex: 1;"><label>Bitiş Tarihi:</label><input type="date" id="supervisionEnd"></div></div><div class="input-group"><span>VEYA gün olarak girin:</span><input type="number" id="supervisionDays" value="0" min="0" placeholder="Gün"></div></div><button onclick="finalComparison('${resultDateString}', ${prisonDays})" style="background-color: var(--warning-color); width: 100%;"><span style="font-size: 18px;">🔍 NİHAİ TARİHİ HESAPLA</span></button>`;
+        document.getElementById("result2").innerHTML = `<div class="result-item"><h3>Hesaplama Sonuçları</h3><p><strong>Hesaplanan Toplam Gün:</strong> ${totalCalculatedDays} <small>(Cezaevinde geçen süre olarak ${prisonDays} gün düşüldü)</small></p><p><strong>Sonuç Tarihi:</strong> ${resultDateString}</p></div><div class="date-range"><h3>Yıl Çıkarma <span class="tooltip">ℹ️<span class="tooltiptext">Mahkeme tarafından belirlenen yıl çıkarma miktarı</span></span></h3><select id="yearSubtraction" class="custom-select"><option value="3">3 Yıl</option><option value="1">1 Yıl</option></select></div><div class="date-range"><h3>Denetimde geçirdiği süreler <span class="tooltip">ℹ️<span class="tooltiptext">Denetimli serbestlik süresini tarih aralığı veya gün olarak giriniz</span></span></h3><div class="input-group"><div style="flex: 1;"><label>Başlangıç Tarihi:</label><input type="date" id="supervisionStart"></div><div style="flex: 1;"><label>Bitiş Tarihi:</label><input type="date" id="supervisionEnd"></div></div><div class="input-group"><span>VEYA gün olarak girin:</span><input type="number" id="supervisionDays" value="0" min="0" placeholder="Gün"></div></div><button onclick="finalComparison('${resultDateString}', ${prisonDays})" style="background-color: var(--warning-color); width: 100%;"><span style="font-size: 18px;">🔍 NİHAİ TARİHİ HESAPLA</span></button>`;
     }
     function finalComparison(resultDateString, prisonDays) {
         const parts = resultDateString.split('/'); const resultDate = new Date(parts[2], parts[1] - 1, parts[0]);
