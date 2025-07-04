@@ -36,6 +36,7 @@
     .nav-btn {
         display: block;
         width: 100%;
+        box-sizing: border-box; /* Padding'in genişliği etkilememesi için */
         background-color: #ffffff;
         color: #34495e;
         padding: 15px 20px;
@@ -45,6 +46,7 @@
         margin-bottom: 10px;
         font-size: 16px;
         text-align: left;
+        text-decoration: none; /* Link altı çizgisini kaldır */
         transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
         font-weight: 500;
     }
@@ -153,6 +155,10 @@
         <button id="nav-btn-1" class="nav-btn active" onclick="showApp('app1-container', this)">Basit Tarih Hesaplayıcı</button>
         <button id="nav-btn-2" class="nav-btn" onclick="showApp('app2-container', this)">Gelişmiş Tarih Hesaplayıcı</button>
         <button id="nav-btn-3" class="nav-btn" onclick="showApp('app3-container', this)">Hatırlatıcı KF1500</button>
+        
+        <a href="https://www.mevzuat.gov.tr/mevzuat?MevzuatNo=5275&MevzuatTur=1&MevzuatTertip=5" class="nav-btn" target="_blank" rel="noopener noreferrer">CGTİHK (5275 S.K.)</a>
+        <a href="https://www.mevzuat.gov.tr/mevzuat?MevzuatNo=5237&MevzuatTur=1&MevzuatTertip=5" class="nav-btn" target="_blank" rel="noopener noreferrer">TCK (5237 S.K.)</a>
+        
     </nav>
 
     <main class="main-content">
@@ -231,33 +237,28 @@
 
 <script>
     // --- GENEL KONTROL FONKSİYONU ---
-    // Bu fonksiyon tüm buton tıklamalarını yönetir.
     function showApp(appIdToShow, clickedButton) {
-        // 1. Tüm uygulama pencerelerini gizle
-        const allApps = document.querySelectorAll('.app-content');
-        allApps.forEach(app => {
-            app.classList.add('hidden');
-        });
+        if(document.getElementById(appIdToShow)){
+            const allApps = document.querySelectorAll('.app-content');
+            allApps.forEach(app => {
+                app.classList.add('hidden');
+            });
 
-        // 2. Tüm butonlardan 'active' stilini kaldır
-        const allButtons = document.querySelectorAll('.nav-btn');
-        allButtons.forEach(button => {
-            button.classList.remove('active');
-        });
+            const allButtons = document.querySelectorAll('.nav-btn');
+            allButtons.forEach(button => {
+                button.classList.remove('active');
+            });
 
-        // 3. Sadece tıklanan butona 'active' stilini ekle
-        clickedButton.classList.add('active');
+            clickedButton.classList.add('active');
 
-        // 4. Sadece ilgili uygulama penceresini göster
-        const appToShow = document.getElementById(appIdToShow);
-        if (appToShow) {
+            const appToShow = document.getElementById(appIdToShow);
             appToShow.classList.remove('hidden');
         }
     }
 
     // --- UYGULAMA 1: BASİT TARİH HESAPLAYICI SCRIPTLERI ---
     function parseDate1(dateStr) {
-        let dateParts = dateStr.split(/[\/\.]/); // / veya . ile ayır
+        let dateParts = dateStr.split(/[\/\.]/);
         if (dateParts.length === 3) {
             let day = parseInt(dateParts[0], 10); let month = parseInt(dateParts[1], 10); let year = parseInt(dateParts[2], 10);
             if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); }
@@ -383,9 +384,6 @@
 
     // --- SAYFA YÜKLENDİĞİNDE ÇALIŞACAK KODLAR ---
     window.onload = () => {
-        // Sayfa ilk açıldığında herhangi bir işlem yapmaya gerek yok çünkü
-        // ilk buton ve ilk uygulama HTML içinde zaten varsayılan olarak aktif/görünür durumda.
-        
         // Sadece Uygulama 3 için başlangıç fonksiyonlarını çalıştır
         loadReminders();
         if (typeof Notification !== 'undefined') Notification.requestPermission();
