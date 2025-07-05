@@ -250,6 +250,7 @@
                      <p>Lütfen aşağıdaki suçlardan size uyanları işaretleyiniz. Bu seçim, koşullu salıverilme oranınızı doğrudan etkileyecektir.</p>
                     <div class="question-group" id="wizard-crime-list">
                         <div class="form-group inline"><label>Kasten Öldürme (TCK 81-83), Neticesi Sebebiyle Ağırlaşmış Yaralama, İşkence veya Eziyet mi?</label><input type="checkbox" id="isKastenOldurme" onchange="wizard_handleOtherCrimes()"></div>
+                    <div class="form-group inline"><label>Eşe Karşı Kasten Yaralama (TCK 86/3-a) suçu mu?</label><input type="checkbox" id="isEseKarsiYaralama" onchange="wizard_handleOtherCrimes()"></div>
                         <div class="form-group inline"><label>Cinsel Dokunulmazlığa Karşı Suçlar (TCK 102-105) mı?</label><input type="checkbox" id="isCinsel" onchange="wizard_handleOtherCrimes()"></div>
                         <div class="form-group inline"><label>Özel Hayata ve Hayatın Gizli Alanına Karşı Suçlar (TCK 132-138) mı?</label><input type="checkbox" id="isOzelHayat" onchange="wizard_handleOtherCrimes()"></div>
                         <div class="form-group inline"><label>Uyuşturucu veya Uyarıcı Madde İmal ve Ticareti (TCK 188) mi?</label><input type="checkbox" id="isUyusturucu" onchange="wizard_handleOtherCrimes()"></div>
@@ -1371,12 +1372,48 @@
     function wizard_uncheckNoSpecialConditions() { document.getElementById('noSpecialConditions').checked = false; const conditionCheckboxes = [document.getElementById('isCocuk'), document.getElementById('hasCocuk'), document.getElementById('isHasta')]; conditionCheckboxes.forEach(cb => { cb.disabled = false; }); }
     function wizard_toggleMahsupForm() { const isCocuk = document.getElementById('isCocuk').checked; document.getElementById('cocukMahsupGrubu').style.display = isCocuk ? 'block' : 'none'; document.getElementById('adultMahsupGrubu').style.display = isCocuk ? 'none' : 'block'; }
     function wizard_goToStep(stepNumber) { if (stepNumber > 1) { if (!wizard_validateStep(stepNumber - 1)) { return; } wizard_saveStepData(stepNumber - 1); } document.querySelectorAll('#app-wizard-container .wizard-step').forEach(step => step.classList.remove('active')); document.getElementById('step' + stepNumber).classList.add('active'); }
-    function wizard_validateStep(step) { if (step === 1) { const sucTarihiValue = document.getElementById('sucTarihi').value; const girisTarihiValue = document.getElementById('girisTarihi').value; const cezaTuruValue = document.getElementById('cezaTuru').value; const cezaYilValue = parseInt(document.getElementById('cezaYil').value) || 0; const cezaAyValue = parseInt(document.getElementById('cezaAy').value) || 0; const cezaGunValue = parseInt(document.getElementById('cezaGun').value) || 0; if (!sucTarihiValue || !girisTarihiValue) { alert("Lütfen tüm tarih alanlarını doldurunuz.\n\nNot: Elle tarih giriyorsanız tarayıcınızın desteklediği formatı kullandığınızdan emin olun veya takvim simgesini kullanın."); return false; } if (cezaTuruValue === 'sureli' && (cezaYilValue + cezaAyValue + cezaGunValue === 0)) { alert("Lütfen 'Süreli Hapis Cezası Miktarı' alanını doldurunuz."); return false; } } return true; }
-    function wizard_saveStepData(step) { const data = wizard_formData; if (step === 1) { data.cezaTuru = document.getElementById('cezaTuru').value; data.cezaYil = parseInt(document.getElementById('cezaYil').value) || 0; data.cezaAy = parseInt(document.getElementById('cezaAy').value) || 0; data.cezaGun = parseInt(document.getElementById('cezaGun').value) || 0; data.sucTarihi = document.getElementById('sucTarihi').value; data.girisTarihi = document.getElementById('girisTarihi').value; } else if (step === 2) { data.tekerrur = document.querySelector('input[name="tekerrur"]:checked').value; data.isCocuk = document.getElementById('isCocuk').checked; data.hasCocuk = document.getElementById('hasCocuk').checked; data.isHasta = document.getElementById('isHasta').checked; } else if (step === 3) { if(data.isCocuk) { data.mahsupUnder15 = parseInt(document.getElementById('mahsupUnder15').value) || 0; data.mahsup15to18 = parseInt(document.getElementById('mahsup15to18').value) || 0; data.mahsupAdult = 0; } else { data.mahsupAdult = parseInt(document.getElementById('mahsupAdult').value) || 0; data.mahsupUnder15 = 0; data.mahsup15to18 = 0; } } else if (step === 4) { data.isKastenOldurme = document.getElementById('isKastenOldurme').checked; data.isCinsel = document.getElementById('isCinsel').checked; data.isOzelHayat = document.getElementById('isOzelHayat').checked; data.isUyusturucu = document.getElementById('isUyusturucu').checked; data.isDevlet = document.getElementById('isDevlet').checked; data.isTeror = document.getElementById('isTeror').checked; data.isOrgut = document.getElementById('isOrgut').checked; } }
+    function wizard_validateStep(step) { if (step === 1) { const sucTarihiValue = document.getElementById('sucTarihi').value; const girisTarihiValue = document.getElementById('girisTarihi').value; const cezaTuruValue = document.getElementById('cezaTuru').value; const cezaYilValue = parseInt(document.getElementById('cezaYil').value) || 0; const cezaAyValue = parseInt(document.getElementById('cezaAy').value) || 0; const cezaGunValue = parseInt(document.getElementById('cezaGun').value) || 0; if (!sucTarihiValue || !girisTarihiValue) { alert("Lütfen tüm tarih alanlarını doldurunuz.\n\nNot: Elle tarih giriyorsanız tarayıcınızın desteklediği formatı kullandığınızdan emin olun veya takvim simgesini kullanın."); return false; } if (cezaTuruValue === 'sureli' && (cezaYilValue + cezaAyValue + cezaGunValue === 0)) { alert("Lütfen 'Süreli Hapis Cezası Miktarı' alanını doldurunuz."); return false; } } return true; }    
+function wizard_saveStepData(step) { 
+        const data = wizard_formData; 
+        if (step === 1) { 
+            data.cezaTuru = document.getElementById('cezaTuru').value; 
+            data.cezaYil = parseInt(document.getElementById('cezaYil').value) || 0; 
+            data.cezaAy = parseInt(document.getElementById('cezaAy').value) || 0; 
+            data.cezaGun = parseInt(document.getElementById('cezaGun').value) || 0; 
+            data.sucTarihi = document.getElementById('sucTarihi').value; 
+            data.girisTarihi = document.getElementById('girisTarihi').value; 
+        } else if (step === 2) { 
+            data.tekerrur = document.querySelector('input[name="tekerrur"]:checked').value; 
+            data.isCocuk = document.getElementById('isCocuk').checked; 
+            data.hasCocuk = document.getElementById('hasCocuk').checked; 
+            data.isHasta = document.getElementById('isHasta').checked; 
+        } else if (step === 3) { 
+            if(data.isCocuk) { 
+                data.mahsupUnder15 = parseInt(document.getElementById('mahsupUnder15').value) || 0; 
+                data.mahsup15to18 = parseInt(document.getElementById('mahsup15to18').value) || 0; 
+                data.mahsupAdult = 0; 
+            } else { 
+                data.mahsupAdult = parseInt(document.getElementById('mahsupAdult').value) || 0; 
+                data.mahsupUnder15 = 0; 
+                data.mahsup15to18 = 0; 
+            } 
+        } else if (step === 4) { 
+            data.isKastenOldurme = document.getElementById('isKastenOldurme').checked;
+            data.isEseKarsiYaralama = document.getElementById('isEseKarsiYaralama').checked; // YENİ EKLENDİ
+            data.isCinsel = document.getElementById('isCinsel').checked; 
+            data.isOzelHayat = document.getElementById('isOzelHayat').checked; 
+            data.isUyusturucu = document.getElementById('isUyusturucu').checked; 
+            data.isDevlet = document.getElementById('isDevlet').checked; 
+            data.isTeror = document.getElementById('isTeror').checked; 
+            data.isOrgut = document.getElementById('isOrgut').checked; 
+        } 
+    }
+  
     function wizard_formatDate(date) { if (!(date instanceof Date) || isNaN(date)) return "Hesaplanamadı"; return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
     function wizard_addDays(date, days) { const newDate = new Date(date); newDate.setDate(newDate.getDate() + days); return newDate; }
     function wizard_addDuration(date, years, months, days) { const newDate = new Date(date); newDate.setFullYear(newDate.getFullYear() + years); newDate.setMonth(newDate.getMonth() + months); newDate.setDate(newDate.getDate() + days); return newDate; }
-    function wizard_hesapla() {
+    
+function wizard_hesapla() {
         wizard_saveStepData(4);
         wizard_goToStep(5);
         const data = wizard_formData;
@@ -1385,7 +1422,7 @@
         const girisTarihi = new Date(data.girisTarihi);
         girisTarihi.setHours(0, 0, 0, 0);
         const sucTarihi = new Date(data.sucTarihi);
-        sucTarihi.setHours(0,0,0,0); // Saati sıfırla
+        sucTarihi.setHours(0,0,0,0);
         const toplamMahsupGun = data.mahsupAdult + data.mahsupUnder15 + data.mahsup15to18;
         let avantajGun = 0;
         const cutoffDate2020 = new Date('2020-03-30');
@@ -1405,7 +1442,7 @@
         }
         let kosulluSalivermeOrani = 1/2;
         let oranAciklama = "Adi suçlar için standart oran (1/2).";
-        if (data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isDevlet || data.isOrgut || data.isTeror) { kosulluSalivermeOrani = 2/3; oranAciklama = "Katalog suçlar için oran (2/3)."; }
+        if (data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isDevlet || data.isOrgut || data.isTeror || data.isEseKarsiYaralama) { kosulluSalivermeOrani = 2/3; oranAciklama = "Katalog suçlar için oran (2/3)."; }
         if (data.isUyusturucu) { kosulluSalivermeOrani = 3/4; oranAciklama = "Uyuşturucu madde ticareti için oran (3/4)."; }
         if (data.tekerrur === 'var' && kosulluSalivermeOrani < 2/3) { kosulluSalivermeOrani = 2/3; oranAciklama = "Tekerrür nedeniyle oran (2/3)."; }
         if (data.tekerrur === 'ikinci' && kosulluSalivermeOrani < 3/4) { kosulluSalivermeOrani = 3/4; oranAciklama = "İkinci defa tekerrür nedeniyle oran (3/4)."; }
@@ -1422,6 +1459,17 @@
             denetimSuresiYil = 3;
             denetimAciklama = "Suç 30/03/2020 öncesi ve istisna dışı olduğu için denetim süresi (3 Yıl - Geçici M. 6).";
         }
+
+        // =================================================================
+        // --- YENİ EKLENEN KURAL: EŞE KARŞI YARALAMA İSTİSNASI ---
+        // =================================================================
+        // Bu kural, 3 yıllık denetim kuralını ezer ve süreyi 1 yıla geri çeker.
+        if (data.isEseKarsiYaralama) {
+            denetimSuresiYil = 1;
+            denetimAciklama = "Eşe karşı kasten yaralama suçunda denetim süresi (1 Yıl) olarak uygulanır.";
+        }
+        // --- YENİ KURAL SONU ---
+        
         if (data.hasCocuk) { let sure = sucTarihi <= cutoffDate2020 ? 4 : 2; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `0-6 yaş çocuk sahibi kadın hükümlü avantajı (${sure} Yıl).`; } }
         if (data.isHasta) { let sure = 3; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `Ağır hastalık/engellilik/kocama durumu avantajı (${sure} Yıl).`; } }
 
@@ -1429,39 +1477,31 @@
         denetimTarihi.setFullYear(denetimTarihi.getFullYear() - denetimSuresiYil);
         denetimTarihi.setHours(0,0,0,0);
 
-        // =================================================================
-        // --- YENİ EKLENEN MİNİMUM 1 AY KALIŞ KURALI ---
-        // =================================================================
         let minStayDate = null;
         let minStayReason = "";
         const post2020CutoffDate = new Date('2020-03-30');
 
         if (sucTarihi > post2020CutoffDate) {
-            const isKasti = document.getElementById('isAdiSuc').checked || istisnaSuclarDS; // Adi suçlar veya katalog suçlar kastidir.
+            const isKasti = document.getElementById('isAdiSuc').checked || istisnaSuclarDS || data.isEseKarsiYaralama; 
             const toplamCezaYil = toplamCezaGun / 365.25;
 
-            // Kural A: 3 yıldan fazla kasti suçlar
             if (isKasti && toplamCezaYil > 3) {
                 minStayDate = wizard_addDuration(new Date(girisTarihi), 0, 1, 0);
                 minStayReason = "<p class='reason'><b>Not:</b> Suç tarihi 30/03/2020 sonrası ve kasti suçun cezası 3 yıldan fazla olduğu için, kapalı cezaevinde en az 1 ay kalma kuralı uygulanmıştır.</p>";
             }
             
-            // Kural B: İkinci kez tekerrür
             if (data.tekerrur === 'ikinci' && yatilacakGun > 30) {
                  const oneMonthMinDate = wizard_addDuration(new Date(girisTarihi), 0, 1, 0);
-                 // Eğer Kural A'dan gelen tarih yoksa veya bu tarih daha ileriyse bunu kullan (genelde aynı olur)
                  if (!minStayDate || oneMonthMinDate > minStayDate) {
                      minStayDate = oneMonthMinDate;
                      minStayReason = "<p class='reason'><b>Not:</b> Suç tarihi 30/03/2020 sonrası ve ikinci kez tekerrür hükümleri uygulandığı için, kapalı cezaevinde en az 1 ay kalma kuralı uygulanmıştır.</p>";
                  }
             }
 
-            // Hesaplanan denetim tarihini minimum kalış tarihiyle karşılaştır
             if (minStayDate && denetimTarihi < minStayDate) {
                 denetimTarihi = minStayDate;
             }
         }
-        // --- YENİ EKLENEN KISIM SONU ---
 
         let denetimTarihiDisplay;
         let denetimTarihiClass = "date";
@@ -1501,7 +1541,7 @@
             finalHTML += `<div class="result-item special"><h3>DENETİMLİ SERBESTLİK TARİHİ (7456 S.K. Geçici Madde 10 Avantajıyla)</h3><p><strong>31/07/2023 tarihinden önceki suçlar için hak kazanılabilecek en erken tarih:</strong> <span class="${denetimAvantajTarihiClass}">${denetimAvantajTarihiDisplay}</span></p><p class="reason">${avantajAciklama}</p>${avantMinStayReason}</div>`;
         }
         resultsContainer.innerHTML = finalHTML;
-        }
+    }
 
     // --- DİĞER UYGULAMALARIN SCRIPTLERI ---
     function parseDate1(dateStr) { let dateParts = dateStr.split(/[\/\.]/); if (dateParts.length === 3) { let day = parseInt(dateParts[0], 10); let month = parseInt(dateParts[1], 10); let year = parseInt(dateParts[2], 10); if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); } } if (dateStr.length === 8 && /^\d+$/.test(dateStr)) { let day = parseInt(dateStr.substring(0, 2), 10); let month = parseInt(dateStr.substring(2, 4), 10); let year = parseInt(dateStr.substring(4, 8), 10); if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); } } return null; }
