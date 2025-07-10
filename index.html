@@ -120,7 +120,7 @@
     #app1-container #result1 { margin-top: 20px; font-weight: bold; font-size: 1.1em; background-color: #e8f5e9; padding: 10px; border-radius: 4px; }
     #app1-container .error { color: #d32f2f; font-weight: bold; margin-top: 10px; }
 
-    /* --- Uygulama 2: Gelişmiş Tarih Hesaplayıcı Stilleri --- */
+    /* --- Uygulama 2: Gelişmiş Tarih Hesaplayıcı Stilleri (YENİ) --- */
     #app2-container { line-height: 1.6; }
     #app2-container h1 { color: var(--dark-color); text-align: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid var(--primary-color); margin-top:0;}
     #app2-container h3 { color: var(--primary-color); margin-top: 0; }
@@ -130,9 +130,8 @@
     #app2-container button { background-color: var(--primary-color); color: white; padding: 12px 24px; border: none; border-radius: var(--border-radius); cursor: pointer; margin-bottom: 15px; font-size: 16px; font-weight: 600; transition: all 0.3s; box-shadow: var(--box-shadow); }
     #app2-container button:hover { background-color: #2980b9; transform: translateY(-2px); }
     #app2-container #result2 { margin-top: 30px; padding: 20px; border: 2px solid #ddd; border-radius: var(--border-radius); background-color: #fdfdfd; animation: fadeIn 0.5s ease-out; }
-    #app2-container .green-bg, #app2-container .red-bg { color: white; padding: 8px 15px; display: inline-block; border-radius: var(--border-radius); font-weight: bold; }
-    #app2-container .green-bg { background-color: var(--secondary-color); }
-    #app2-container .red-bg { background-color: var(--danger-color); }
+    #app2-container .green-bg { background-color: var(--secondary-color); color: white; padding: 8px 15px; display: inline-block; border-radius: var(--border-radius); font-weight: bold; }
+    #app2-container .red-bg { background-color: var(--danger-color); color: white; padding: 8px 15px; display: inline-block; border-radius: var(--border-radius); font-weight: bold; }
     #app2-container .date-range { margin: 20px 0; padding: 20px; border: 2px solid #eee; border-radius: var(--border-radius); background-color: #f8f9fa; }
     #app2-container .input-group { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;}
     #app2-container .input-group input { flex: 1; min-width: 150px; }
@@ -142,14 +141,28 @@
     #app2-container .period-row input, #app2-container .period-row select { margin-bottom: 0; flex: 1; min-width: 100px;}
     #app2-container .add-period-btn { background-color: var(--secondary-color); width: 100%; margin-top: 10px; }
     #app2-container .add-period-btn:hover { background-color: #27ae60; }
-    #app2-container .remove-period-btn { background-color: var(--danger-color); padding: 10px 15px !important; margin-left: auto; flex-grow: 0 !important; flex-basis: auto !important; }
+    #app2-container .remove-period-btn { background-color: var(--danger-color); padding: 10px 15px !important; margin-left: auto; flex-grow: 0 !important; flex-basis: auto !important; width: 45px; } 
     #app2-container .remove-period-btn:hover { background-color: #c0392b; }
     #app2-container .result-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
     #app2-container .result-item:last-child { border-bottom: none; }
     #app2-container .tooltip { position: relative; display: inline-block; cursor: help; }
     #app2-container .tooltip .tooltiptext { visibility: hidden; width: 200px; background-color: var(--dark-color); color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 14px; font-weight: normal; }
     #app2-container .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
-    
+    #app2-container .period-row-header { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 5px; 
+    padding: 0 10px 0 10px; 
+    font-weight: bold; 
+    color: #555; 
+}
+#app2-container .period-row-header span { 
+    flex: 1; 
+    text-align: center; 
+}
+#app2-container .period-row-header .button-placeholder { 
+    width: 45px; 
+}
     /* --- Uygulama 3: Hatırlatıcı Stilleri --- */
     #app3-container h1 { margin-top:0; }
     #app3-container label { display: block; margin-bottom: 5px; font-weight: bold; }
@@ -184,6 +197,7 @@
         #app2-container .input-group { flex-direction: column; align-items: stretch; }
         #app2-container .period-row { flex-direction: column; align-items: stretch; }
         #app2-container .remove-period-btn { width: 100%; margin-top: 10px; }
+        #app2-container .period-row-header { display: none; }
     }
 </style>
 </head>
@@ -205,13 +219,13 @@
 
     <main class="main-content">
     <div id="app-search-container" class="app-content hidden">
-            <div class="app-description">
-                <strong>Adliye Arama Motoru:</strong> Bir ilçenin adli yönden hangi adliyeye ve hangi Ağır Ceza Merkezi'ne (ACM) bağlı olduğunu hızlıca bulmanızı sağlar.
-            </div>
-            <h1>Adliye Arama Motoru</h1>
-            <input type="text" id="search-input" placeholder="İlçe, bağlı adliye veya ACM adı yazarak arayın...">
-            <div id="search-results"></div>
-        </div>
+            <div class="app-description">
+                <strong>Adliye Arama Motoru:</strong> Bir ilçenin adli yönden hangi adliyeye ve hangi Ağır Ceza Merkezi'ne (ACM) bağlı olduğunu hızlıca bulmanızı sağlar.
+            </div>
+            <h1>Adliye Arama Motoru</h1>
+            <input type="text" id="search-input" placeholder="İlçe, bağlı adliye veya ACM adı yazarak arayın...">
+            <div id="search-results"></div>
+        </div>
         
         <div id="app-wizard-container" class="app-content">
             <div class="app-description">
@@ -220,7 +234,7 @@
             <form id="infazForm">
                 <div id="step1" class="wizard-step active">
                     <h2>Adım 1: Ceza ve Tarih Bilgileri</h2>
-                     <div class="form-group"><label for="cezaTuru">Ceza Türü</label><select id="cezaTuru"><option value="sureli">Süreli Hapis</option><option value="muebbet">Müebbet Hapis</option><option value="agirlastirilmis">Ağırlaştırılmış Müebbet Hapis</option></select></div>
+                    <div class="form-group"><label for="cezaTuru">Ceza Türü</label><select id="cezaTuru"><option value="sureli">Süreli Hapis</option><option value="muebbet">Müebbet Hapis</option><option value="agirlastirilmis">Ağırlaştırılmış Müebbet Hapis</option></select></div>
                     <div id="sureliHapisGrubu" class="form-group"><label>Süreli Hapis Cezası Miktarı</label><div class="ceza-group"><input type="number" id="cezaYil" placeholder="Yıl" min="0"><input type="number" id="cezaAy" placeholder="Ay" min="0"><input type="number" id="cezaGun" placeholder="Gün" min="0"></div></div>
                     <div class="form-group"><label for="sucTarihi">Suçun İşlendiği Tarih</label><input type="date" id="sucTarihi"></div>
                     <div class="form-group"><label for="girisTarihi">Cezanın İnfazına Başlama Tarihi</label><input type="date" id="girisTarihi"></div>
@@ -246,11 +260,11 @@
                     <div class="buttons"><button type="button" class="btn-prev" onclick="wizard_goToStep(2)">&larr; Geri</button><button type="button" class="btn-next" onclick="wizard_goToStep(4)">İleri &rarr;</button></div>
                 </div>
                 <div id="step4" class="wizard-step">
-                     <h2>Adım 4: Suç Tipinin Belirlenmesi</h2>
-                     <p>Lütfen aşağıdaki suçlardan size uyanları işaretleyiniz. Bu seçim, koşullu salıverilme oranınızı doğrudan etkileyecektir.</p>
+                    <h2>Adım 4: Suç Tipinin Belirlenmesi</h2>
+                    <p>Lütfen aşağıdaki suçlardan size uyanları işaretleyiniz. Bu seçim, koşullu salıverilme oranınızı doğrudan etkileyecektir.</p>
                     <div class="question-group" id="wizard-crime-list">
                         <div class="form-group inline"><label>Kasten Öldürme (TCK 81-83), Neticesi Sebebiyle Ağırlaşmış Yaralama, İşkence veya Eziyet mi?</label><input type="checkbox" id="isKastenOldurme" onchange="wizard_handleOtherCrimes()"></div>
-                    <div class="form-group inline"><label>Eşe Karşı Kasten Yaralama (TCK 86/3-a) suçu mu?</label><input type="checkbox" id="isEseKarsiYaralama" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Eşe Karşı Kasten Yaralama (TCK 86/3-a) suçu mu?</label><input type="checkbox" id="isEseKarsiYaralama" onchange="wizard_handleOtherCrimes()"></div>
                         <div class="form-group inline"><label>Cinsel Dokunulmazlığa Karşı Suçlar (TCK 102-105) mı?</label><input type="checkbox" id="isCinsel" onchange="wizard_handleOtherCrimes()"></div>
                         <div class="form-group inline"><label>Özel Hayata ve Hayatın Gizli Alanına Karşı Suçlar (TCK 132-138) mı?</label><input type="checkbox" id="isOzelHayat" onchange="wizard_handleOtherCrimes()"></div>
                         <div class="form-group inline"><label>Uyuşturucu veya Uyarıcı Madde İmal ve Ticareti (TCK 188) mi?</label><input type="checkbox" id="isUyusturucu" onchange="wizard_handleOtherCrimes()"></div>
@@ -272,35 +286,72 @@
         </div>
         
         <div id="app1-container" class="app-content hidden">
-             <div class="app-description">
+            <div class="app-description">
                 <strong>Basit Tarih Hesaplayıcı:</strong> İki tarih arasındaki farkı bulmak veya bir tarihe belirli bir gün ekleyip/çıkarmak için kullanılır. Hızlı ve temel hesaplamalar için idealdir.
             </div>
-             <h1>Tarih Hesaplayıcı</h1>
-             <label for="date1">1. Tarih (GG/AA/YYYY):</label><input type="text" id="date1">
-             <label for="date2">2. Tarih (GG/AA/YYYY):</label><input type="text" id="date2">
-             <label for="days">Gün Ekle/Çıkar (1. Tarihten):</label><input type="number" id="days">
-             <br><button onclick="addSubtractDays()">Gün Ekle/Çıkar</button><button onclick="calculateDifference()">Fark Hesapla</button>
-             <div id="result1"></div><div id="error1" class="error"></div>
+            <h1>Tarih Hesaplayıcı</h1>
+            <label for="date1">1. Tarih (GG/AA/YYYY):</label><input type="text" id="date1">
+            <label for="date2">2. Tarih (GG/AA/YYYY):</label><input type="text" id="date2">
+            <label for="days">Gün Ekle/Çıkar (1. Tarihten):</label><input type="number" id="days">
+            <br><button onclick="addSubtractDays()">Gün Ekle/Çıkar</button><button onclick="calculateDifference()">Fark Hesapla</button>
+            <div id="result1"></div><div id="error1" class="error"></div>
         </div>
 
         <div id="app2-container" class="app-content hidden">
             <div class="app-description">
                 <strong>Gelişmiş Tarih Hesaplayıcı:</strong> Birden fazla cezası olan veya farklı infaz oranlarına tabi hükümlüler için profesyonel bir araçtır. Cezaları toplayarak tek bir koşullu salıverilme tarihi hesaplar.
             </div>
-             <h1>Gelişmiş Tarih Hesaplayıcı</h1>
-             <div class="period-container" id="periodsContainer">
-                 <h3>CEZALAR <span class="tooltip">ℹ️<span class="tooltiptext">Her ceza için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
-                 <div class="period-row"><input type="number" class="period-years" value="0" placeholder="Yıl" min="0"><input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11"><input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30"><select class="period-ratio"><option value="0.5">1/2</option><option value="0.6666666666666666">2/3</option><option value="0.75">3/4</option></select><button class="remove-period-btn" onclick="this.parentNode.remove()">×</button></div>
-             </div>
-             <button class="add-period-btn" onclick="addPeriod()">+ Yeni Ceza Ekle</button>
-             <div class="date-range">
-                 <h3>Cezaevinde Geçirdiği Süreler <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
-                 <div class="input-group"><div style="flex: 1;"><label>Başlangıç Tarihi:</label><input type="date" id="prisonStart"></div><div style="flex: 1;"><label>Bitiş Tarihi:</label><input type="date" id="prisonEnd"></div></div>
-                 <div class="input-group"><span>VEYA gün olarak girin:</span><input type="number" id="prisonDays" value="0" min="0" placeholder="Gün"></div>
-             </div>
-             <label for="startDate">Başlangıç Tarihi:</label><input type="date" id="startDate">
-             <button onclick="calculateDate()" style="background-color: var(--secondary-color); width: 100%; padding: 15px;"><span style="font-size: 18px;">⏳ HESAPLA</span></button>
-             <div id="result2"></div>
+            <h1>Gelişmiş Tarih Hesaplayıcı</h1>
+
+            <div class="period-container" id="periodsContainer">
+              <h3>Dönemler <span class="tooltip">ℹ️<span class="tooltiptext">Her dönem için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
+              <div class="period-row-header">
+    <span>Yıl</span>
+    <span>Ay</span>
+    <span>Gün</span>
+    <span>Oran</span>
+    <span class="button-placeholder"></span>
+               </div>
+                <div class="period-row">
+                <input type="number" class="period-years" value="0" placeholder="Yıl" min="0">
+                <input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11">
+                <input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30">
+                <select class="period-ratio">
+                  <option value="0.5">1/2</option>
+                  <option value="0.6666666666666666">2/3</option>
+                  <option value="0.75">3/4</option>
+                </select>
+                <button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>
+              </div>
+            </div>
+            <button class="add-period-btn" onclick="addPeriod()">+ Yeni Dönem Ekle</button>
+          
+            <div class="date-range">
+              <h3>Cezaevi Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
+              <div class="input-group">
+                <div style="flex: 1;">
+                  <label>Başlangıç Tarihi:</label>
+                  <input type="date" id="prisonStart">
+                </div>
+                <div style="flex: 1;">
+                  <label>Bitiş Tarihi:</label>
+                  <input type="date" id="prisonEnd">
+                </div>
+              </div>
+              <div class="input-group">
+                <span>VEYA gün olarak girin:</span>
+                <input type="number" id="prisonDays" value="0" min="0" placeholder="Gün">
+              </div>
+            </div>
+          
+            <label for="startDate">Başlangıç Tarihi:</label>
+            <input type="date" id="startDate">
+          
+            <button onclick="calculateAdvancedDate()" style="background-color: var(--secondary-color); width: 100%; padding: 15px;">
+              <span style="font-size: 18px;">⏳ HESAPLA</span>
+            </button>
+          
+            <div id="result2"></div>
         </div>
 
         <div id="app3-container" class="app-content hidden">
@@ -322,9 +373,14 @@
 <script>
     // --- GENEL KONTROL FONKSİYONU ---
     function showApp(appIdToShow, clickedButton) { if(document.getElementById(appIdToShow)){ document.querySelectorAll('.app-content').forEach(app => app.classList.add('hidden')); document.querySelectorAll('.nav-btn').forEach(button => button.classList.remove('active')); clickedButton.classList.add('active'); document.getElementById(appIdToShow).classList.remove('hidden'); } }
- // --- ADLİYE ARAMA MOTORU SCRIPTLERI ---
-   const adliyeVeriTabani = [
-        { ilce: 'Adana', bagliAdliye: 'Adana', acm: 'Adana' },
+
+    // --- ADLİYE ARAMA MOTORU SCRIPTLERI ---
+    /*
+     UYARI: Aşağıdaki boş diziye ('[ ]') kendi adliye veri listenizi yapıştırın.
+     Örnek format: { ilce: 'Adana', bagliAdliye: 'Adana', acm: 'Adana' },
+    */
+    const adliyeVeriTabani = [
+{ ilce: 'Adana', bagliAdliye: 'Adana', acm: 'Adana' },
         { ilce: 'Karaisalı', bagliAdliye: 'Karaisalı', acm: 'Adana' },
         { ilce: 'Karataş', bagliAdliye: 'Karataş', acm: 'Adana' },
         { ilce: 'Çukurova', bagliAdliye: 'Adana', acm: 'Adana' },
@@ -787,7 +843,7 @@
         { ilce: 'Kumlu', bagliAdliye: 'Reyhanlı', acm: 'Hatay' },
         { ilce: 'Hınıs', bagliAdliye: 'Hınıs', acm: 'Erzurum' },
         { ilce: 'Tekman', bagliAdliye: 'Tekman', acm: 'Erzurum' },
-        { ilce: 'Karaçoban', bagliAdliye: 'Hınıs', acm: 'Hınıs' },
+        { ilce: 'Karaçoban', bagliAdliye: 'Hınıs', acm: 'Erzurum' },
         { ilce: 'Iğdır', bagliAdliye: 'Iğdır', acm: 'Iğdır' },
         { ilce: 'Aralık', bagliAdliye: 'Aralık', acm: 'Iğdır' },
         { ilce: 'Tuzluca', bagliAdliye: 'Tuzluca', acm: 'Iğdır' },
@@ -1325,44 +1381,46 @@
         { ilce: 'Gökçebey', bagliAdliye: 'Gökçebey', acm: 'Zonguldak' },
         { ilce: 'Kilimli', bagliAdliye: 'Zonguldak', acm: 'Zonguldak' },
         { ilce: 'Kozlu', bagliAdliye: 'Zonguldak', acm: 'Zonguldak' }
-    ];
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-        if (searchInput && searchResults) {
-            searchInput.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.trim();
-                searchAdliye(searchTerm, searchResults);
-            });
-        }
-    });
-    function searchAdliye(term, resultsContainer) {
-        resultsContainer.innerHTML = '';
-        if (term.length < 2) {
-            resultsContainer.innerHTML = '<p>Aramak için en az 2 karakter giriniz.</p>';
-            return;
-        }
-        const normalizedTerm = term.toLocaleUpperCase('tr-TR');
-        const results = adliyeVeriTabani.filter(item =>
-            item.ilce.toLocaleUpperCase('tr-TR').includes(normalizedTerm) ||
-            item.bagliAdliye.toLocaleUpperCase('tr-TR').includes(normalizedTerm) ||
-            item.acm.toLocaleUpperCase('tr-TR').includes(normalizedTerm)
-        );
-        if (results.length > 0) {
-            results.forEach(item => {
-                const resultCard = document.createElement('div');
-                resultCard.className = 'result-card'; // Stil için class ataması
-                resultCard.innerHTML = `
-                    <p class="ilce" style="font-size: 1.2em; font-weight: bold;">${item.ilce}</p>
-                    <p><strong>Bağlı Olduğu Adliye:</strong> ${item.bagliAdliye}</p>
-                    <p><strong>Ağır Ceza Merkezi:</strong> ${item.acm}</p>
-                `;
-                resultsContainer.appendChild(resultCard);
-            });
-        } else {
-            resultsContainer.innerHTML = '<p id="no-results" style="color: red;">Sonuç bulunamadı.</p>';
-        }
-    }
+]; 
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        if (searchInput && searchResults) {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.trim();
+                searchAdliye(searchTerm, searchResults);
+            });
+        }
+    });
+    function searchAdliye(term, resultsContainer) {
+        resultsContainer.innerHTML = '';
+        if (term.length < 2) {
+            resultsContainer.innerHTML = '<p>Aramak için en az 2 karakter giriniz.</p>';
+            return;
+        }
+        const normalizedTerm = term.toLocaleUpperCase('tr-TR');
+        const results = adliyeVeriTabani.filter(item =>
+            item.ilce.toLocaleUpperCase('tr-TR').includes(normalizedTerm) ||
+            item.bagliAdliye.toLocaleUpperCase('tr-TR').includes(normalizedTerm) ||
+            item.acm.toLocaleUpperCase('tr-TR').includes(normalizedTerm)
+        );
+        if (results.length > 0) {
+            results.forEach(item => {
+                const resultCard = document.createElement('div');
+                resultCard.className = 'result-card'; 
+                resultCard.innerHTML = `
+                    <p class="ilce" style="font-size: 1.2em; font-weight: bold;">${item.ilce}</p>
+                    <p><strong>Bağlı Olduğu Adliye:</strong> ${item.bagliAdliye}</p>
+                    <p><strong>Ağır Ceza Merkezi:</strong> ${item.acm}</p>
+                    <hr>
+                `;
+                resultsContainer.appendChild(resultCard);
+            });
+        } else {
+            resultsContainer.innerHTML = '<p id="no-results" style="color: red;">Sonuç bulunamadı.</p>';
+        }
+    }
 
     // --- WIZARD SCRIPTLERI ---
     let wizard_formData = {};
@@ -1372,8 +1430,8 @@
     function wizard_uncheckNoSpecialConditions() { document.getElementById('noSpecialConditions').checked = false; const conditionCheckboxes = [document.getElementById('isCocuk'), document.getElementById('hasCocuk'), document.getElementById('isHasta')]; conditionCheckboxes.forEach(cb => { cb.disabled = false; }); }
     function wizard_toggleMahsupForm() { const isCocuk = document.getElementById('isCocuk').checked; document.getElementById('cocukMahsupGrubu').style.display = isCocuk ? 'block' : 'none'; document.getElementById('adultMahsupGrubu').style.display = isCocuk ? 'none' : 'block'; }
     function wizard_goToStep(stepNumber) { if (stepNumber > 1) { if (!wizard_validateStep(stepNumber - 1)) { return; } wizard_saveStepData(stepNumber - 1); } document.querySelectorAll('#app-wizard-container .wizard-step').forEach(step => step.classList.remove('active')); document.getElementById('step' + stepNumber).classList.add('active'); }
-    function wizard_validateStep(step) { if (step === 1) { const sucTarihiValue = document.getElementById('sucTarihi').value; const girisTarihiValue = document.getElementById('girisTarihi').value; const cezaTuruValue = document.getElementById('cezaTuru').value; const cezaYilValue = parseInt(document.getElementById('cezaYil').value) || 0; const cezaAyValue = parseInt(document.getElementById('cezaAy').value) || 0; const cezaGunValue = parseInt(document.getElementById('cezaGun').value) || 0; if (!sucTarihiValue || !girisTarihiValue) { alert("Lütfen tüm tarih alanlarını doldurunuz.\n\nNot: Elle tarih giriyorsanız tarayıcınızın desteklediği formatı kullandığınızdan emin olun veya takvim simgesini kullanın."); return false; } if (cezaTuruValue === 'sureli' && (cezaYilValue + cezaAyValue + cezaGunValue === 0)) { alert("Lütfen 'Süreli Hapis Cezası Miktarı' alanını doldurunuz."); return false; } } return true; }    
-function wizard_saveStepData(step) { 
+    function wizard_validateStep(step) { if (step === 1) { const sucTarihiValue = document.getElementById('sucTarihi').value; const girisTarihiValue = document.getElementById('girisTarihi').value; const cezaTuruValue = document.getElementById('cezaTuru').value; const cezaYilValue = parseInt(document.getElementById('cezaYil').value) || 0; const cezaAyValue = parseInt(document.getElementById('cezaAy').value) || 0; const cezaGunValue = parseInt(document.getElementById('cezaGun').value) || 0; if (!sucTarihiValue || !girisTarihiValue) { alert("Lütfen tüm tarih alanlarını doldurunuz.\n\nNot: Elle tarih giriyorsanız tarayıcınızın desteklediği formatı kullandığınızdan emin olun veya takvim simgesini kullanın."); return false; } if (cezaTuruValue === 'sureli' && (cezaYilValue + cezaAyValue + cezaGunValue === 0)) { alert("Lütfen 'Süreli Hapis Cezası Miktarı' alanını doldurunuz."); return false; } } return true; }     
+    function wizard_saveStepData(step) { 
         const data = wizard_formData; 
         if (step === 1) { 
             data.cezaTuru = document.getElementById('cezaTuru').value; 
@@ -1399,7 +1457,7 @@ function wizard_saveStepData(step) {
             } 
         } else if (step === 4) { 
             data.isKastenOldurme = document.getElementById('isKastenOldurme').checked;
-            data.isEseKarsiYaralama = document.getElementById('isEseKarsiYaralama').checked; // YENİ EKLENDİ
+            data.isEseKarsiYaralama = document.getElementById('isEseKarsiYaralama').checked; 
             data.isCinsel = document.getElementById('isCinsel').checked; 
             data.isOzelHayat = document.getElementById('isOzelHayat').checked; 
             data.isUyusturucu = document.getElementById('isUyusturucu').checked; 
@@ -1408,74 +1466,69 @@ function wizard_saveStepData(step) {
             data.isOrgut = document.getElementById('isOrgut').checked; 
         } 
     }
-  
+ 
     function wizard_formatDate(date) { if (!(date instanceof Date) || isNaN(date)) return "Hesaplanamadı"; return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
     function wizard_addDays(date, days) { const newDate = new Date(date); newDate.setDate(newDate.getDate() + days); return newDate; }
     function wizard_addDuration(date, years, months, days) { const newDate = new Date(date); newDate.setFullYear(newDate.getFullYear() + years); newDate.setMonth(newDate.getMonth() + months); newDate.setDate(newDate.getDate() + days); return newDate; }
     
-function wizard_hesapla() {
-        wizard_saveStepData(4);
-        wizard_goToStep(5);
-        const data = wizard_formData;
-        const resultsContainer = document.getElementById('resultsContainer');
-        resultsContainer.innerHTML = ''; 
-        const girisTarihi = new Date(data.girisTarihi);
-        girisTarihi.setHours(0, 0, 0, 0);
-        const sucTarihi = new Date(data.sucTarihi);
+    function wizard_hesapla() {
+        wizard_saveStepData(4);
+        wizard_goToStep(5);
+        const data = wizard_formData;
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsContainer.innerHTML = ''; 
+        const girisTarihi = new Date(data.girisTarihi);
+        girisTarihi.setHours(0, 0, 0, 0);
+        const sucTarihi = new Date(data.sucTarihi);
         sucTarihi.setHours(0,0,0,0);
-        const toplamMahsupGun = data.mahsupAdult + data.mahsupUnder15 + data.mahsup15to18;
-        let avantajGun = 0;
-        const cutoffDate2020 = new Date('2020-03-30');
-        if (data.isCocuk) {
-            if (sucTarihi <= cutoffDate2020) {
-                avantajGun += data.mahsupUnder15 * 2;
-                avantajGun += data.mahsup15to18 * 1;
-            } else {
-                avantajGun += data.mahsupUnder15 * 1;
-            }
-        }
-        let hakEderekTarihi = null;
+        const toplamMahsupGun = data.mahsupAdult + data.mahsupUnder15 + data.mahsup15to18;
+        let avantajGun = 0;
+        const cutoffDate2020 = new Date('2020-03-30');
+        if (data.isCocuk) {
+            if (sucTarihi <= cutoffDate2020) {
+                avantajGun += data.mahsupUnder15 * 2;
+                avantajGun += data.mahsup15to18 * 1;
+            } else {
+                avantajGun += data.mahsupUnder15 * 1;
+            }
+        }
+        let hakEderekTarihi = null;
         const toplamCezaGun = (data.cezaYil * 365.25) + (data.cezaAy * 30.44) + data.cezaGun;
-        if (data.cezaTuru === 'sureli') {
-            let cezaninBittigiTarih = wizard_addDuration(new Date(data.girisTarihi), data.cezaYil, data.cezaAy, data.cezaGun);
-            hakEderekTarihi = wizard_addDays(cezaninBittigiTarih, -toplamMahsupGun);
-        }
-        let kosulluSalivermeOrani = 1/2;
-        let oranAciklama = "Adi suçlar için standart oran (1/2).";
-        if (data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isDevlet || data.isOrgut || data.isTeror || data.isEseKarsiYaralama) { kosulluSalivermeOrani = 2/3; oranAciklama = "Katalog suçlar için oran (2/3)."; }
-        if (data.isUyusturucu) { kosulluSalivermeOrani = 3/4; oranAciklama = "Uyuşturucu madde ticareti için oran (3/4)."; }
-        if (data.tekerrur === 'var' && kosulluSalivermeOrani < 2/3) { kosulluSalivermeOrani = 2/3; oranAciklama = "Tekerrür nedeniyle oran (2/3)."; }
-        if (data.tekerrur === 'ikinci' && kosulluSalivermeOrani < 3/4) { kosulluSalivermeOrani = 3/4; oranAciklama = "İkinci defa tekerrür nedeniyle oran (3/4)."; }
-        
-        const yatilacakGun = Math.ceil(toplamCezaGun * kosulluSalivermeOrani);
-        const cezaevindeGecirilecekNetGun = yatilacakGun - toplamMahsupGun - avantajGun;
-        let kosulluSalivermeTarihi = wizard_addDays(new Date(data.girisTarihi), cezaevindeGecirilecekNetGun);
-        kosulluSalivermeTarihi.setHours(0,0,0,0);
+        if (data.cezaTuru === 'sureli') {
+            let cezaninBittigiTarih = wizard_addDuration(new Date(data.girisTarihi), data.cezaYil, data.cezaAy, data.cezaGun);
+            hakEderekTarihi = wizard_addDays(cezaninBittigiTarih, -toplamMahsupGun);
+        }
+        let kosulluSalivermeOrani = 1/2;
+        let oranAciklama = "Adi suçlar için standart oran (1/2).";
+        if (data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isDevlet || data.isOrgut || data.isTeror || data.isEseKarsiYaralama) { kosulluSalivermeOrani = 2/3; oranAciklama = "Katalog suçlar için oran (2/3)."; }
+        if (data.isUyusturucu) { kosulluSalivermeOrani = 3/4; oranAciklama = "Uyuşturucu madde ticareti için oran (3/4)."; }
+        if (data.tekerrur === 'var' && kosulluSalivermeOrani < 2/3) { kosulluSalivermeOrani = 2/3; oranAciklama = "Tekerrür nedeniyle oran (2/3)."; }
+        if (data.tekerrur === 'ikinci' && kosulluSalivermeOrani < 3/4) { kosulluSalivermeOrani = 3/4; oranAciklama = "İkinci defa tekerrür nedeniyle oran (3/4)."; }
+        
+        const yatilacakGun = Math.ceil(toplamCezaGun * kosulluSalivermeOrani);
+        const cezaevindeGecirilecekNetGun = yatilacakGun - toplamMahsupGun - avantajGun;
+        let kosulluSalivermeTarihi = wizard_addDays(new Date(data.girisTarihi), cezaevindeGecirilecekNetGun);
+        kosulluSalivermeTarihi.setHours(0,0,0,0);
 
-        let denetimSuresiYil = 1;
-        let denetimAciklama = "Standart denetimli serbestlik süresi (1 Yıl).";
-        const istisnaSuclarDS = data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isUyusturucu || data.isDevlet || data.isTeror || data.isOrgut;
-        if (sucTarihi <= cutoffDate2020 && !istisnaSuclarDS) {
-            denetimSuresiYil = 3;
-            denetimAciklama = "Suç 30/03/2020 öncesi ve istisna dışı olduğu için denetim süresi (3 Yıl - Geçici M. 6).";
-        }
+        let denetimSuresiYil = 1;
+        let denetimAciklama = "Standart denetimli serbestlik süresi (1 Yıl).";
+        const istisnaSuclarDS = data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isUyusturucu || data.isDevlet || data.isTeror || data.isOrgut;
+        if (sucTarihi <= cutoffDate2020 && !istisnaSuclarDS) {
+            denetimSuresiYil = 3;
+            denetimAciklama = "Suç 30/03/2020 öncesi ve istisna dışı olduğu için denetim süresi (3 Yıl - Geçici M. 6).";
+        }
 
-        // =================================================================
-        // --- YENİ EKLENEN KURAL: EŞE KARŞI YARALAMA İSTİSNASI ---
-        // =================================================================
-        // Bu kural, 3 yıllık denetim kuralını ezer ve süreyi 1 yıla geri çeker.
         if (data.isEseKarsiYaralama) {
             denetimSuresiYil = 1;
             denetimAciklama = "Eşe karşı kasten yaralama suçunda denetim süresi (1 Yıl) olarak uygulanır.";
         }
-        // --- YENİ KURAL SONU ---
         
-        if (data.hasCocuk) { let sure = sucTarihi <= cutoffDate2020 ? 4 : 2; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `0-6 yaş çocuk sahibi kadın hükümlü avantajı (${sure} Yıl).`; } }
-        if (data.isHasta) { let sure = 3; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `Ağır hastalık/engellilik/kocama durumu avantajı (${sure} Yıl).`; } }
+        if (data.hasCocuk) { let sure = sucTarihi <= cutoffDate2020 ? 4 : 2; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `0-6 yaş çocuk sahibi kadın hükümlü avantajı (${sure} Yıl).`; } }
+        if (data.isHasta) { let sure = 3; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `Ağır hastalık/engellilik/kocama durumu avantajı (${sure} Yıl).`; } }
 
-        let denetimTarihi = new Date(kosulluSalivermeTarihi);
-        denetimTarihi.setFullYear(denetimTarihi.getFullYear() - denetimSuresiYil);
-        denetimTarihi.setHours(0,0,0,0);
+        let denetimTarihi = new Date(kosulluSalivermeTarihi);
+        denetimTarihi.setFullYear(denetimTarihi.getFullYear() - denetimSuresiYil);
+        denetimTarihi.setHours(0,0,0,0);
 
         let minStayDate = null;
         let minStayReason = "";
@@ -1503,54 +1556,201 @@ function wizard_hesapla() {
             }
         }
 
-        let denetimTarihiDisplay;
-        let denetimTarihiClass = "date";
-        if (denetimTarihi <= girisTarihi && minStayReason === "") {
-            denetimTarihiDisplay = "GİR-ÇIK YAPACAK";
-            denetimTarihiClass = "date gir-cik";
-        } else {
-            denetimTarihiDisplay = wizard_formatDate(denetimTarihi);
-        }
-        
-        const geciciMadde10Tarihi = new Date('2023-07-31');
-        let denetimAvantajTarihi = null;
-        const istisnaSuclarGecici10 = data.isDevlet || data.isTeror || data.isOrgut;
-        if (sucTarihi <= geciciMadde10Tarihi && !istisnaSuclarGecici10 && data.cezaTuru === 'sureli') {
-            denetimAvantajTarihi = new Date(denetimTarihi);
-            denetimAvantajTarihi.setFullYear(denetimAvantajTarihi.getFullYear() - 3);
-            denetimAvantajTarihi.setHours(0,0,0,0);
-        }
+        let denetimTarihiDisplay;
+        let denetimTarihiClass = "date";
+        if (denetimTarihi <= girisTarihi && minStayReason === "") {
+            denetimTarihiDisplay = "GİR-ÇIK YAPACAK";
+            denetimTarihiClass = "date gir-cik";
+        } else {
+            denetimTarihiDisplay = wizard_formatDate(denetimTarihi);
+        }
+        
+        const geciciMadde10Tarihi = new Date('2023-07-31');
+        let denetimAvantajTarihi = null;
+        const istisnaSuclarGecici10 = data.isDevlet || data.isTeror || data.isOrgut;
+        if (sucTarihi <= geciciMadde10Tarihi && !istisnaSuclarGecici10 && data.cezaTuru === 'sureli') {
+            denetimAvantajTarihi = new Date(denetimTarihi);
+            denetimAvantajTarihi.setFullYear(denetimAvantajTarihi.getFullYear() - 3);
+            denetimAvantajTarihi.setHours(0,0,0,0);
+        }
 
-        let finalHTML = `<div class="result-item info"><h3>Mahsup Bilgileri</h3><p>Cezaevinde geçirilecek süreden düşülen toplam tutukluluk süresi: <strong>${toplamMahsupGun} gün</strong></p>${avantajGun > 0 ? `<p>Koşullu salıverilme hesabına eklenen avantaj süresi: <strong>${avantajGun} gün</strong> (Çocuk hükümlü indirimi)</p>` : ''}</div>`;
-        if (hakEderekTarihi) { finalHTML += `<div class="result-item"><h3>Hak Ederek Tahliye Tarihi</h3><p>Cezanın (mahsup sonrası) tamamen bittiği tarih: <span class="date">${wizard_formatDate(hakEderekTarihi)}</span></p></div>`; }
-        finalHTML += `<div class="result-item"><h3>Koşullu Salıverilme Tarihi</h3><p>İyi halli olarak cezaevinden şartlı çıkılabilecek tarih: <span class="date">${wizard_formatDate(kosulluSalivermeTarihi)}</span></p><p class="reason">${oranAciklama}</p></div>`;
-        finalHTML += `<div class="result-item"><h3>Denetimli Serbestlik Tarihi</h3><p>Denetimli serbestlik tedbiriyle cezaevinden çıkılabilecek tarih: <span class="${denetimTarihiClass}">${denetimTarihiDisplay}</span></p><p class="reason">${denetimAciklama}</p>${minStayReason}</div>`;
-        if (denetimAvantajTarihi) {
-            let denetimAvantajTarihiDisplay;
-            let denetimAvantajTarihiClass = "date";
-            let avantMinStayReason = minStayReason; 
-            if(denetimAvantajTarihi <= girisTarihi && avantMinStayReason === "") {
-                denetimAvantajTarihiDisplay = "GİR-ÇIK YAPACAK";
-                denetimAvantajTarihiClass = "date gir-cik";
-            } else {
-                denetimAvantajTarihiDisplay = wizard_formatDate(denetimAvantajTarihi);
-            }
-            const toplamCezaYil = data.cezaYil + (data.cezaAy / 12);
-            const kapaliCezaAciklama = (toplamCezaYil < 10) ? "toplam cezası 10 yıldan az olduğu için <strong>kapalı cezaevinde en az 1 ay</strong>" : "toplam cezası 10 yıl veya daha fazla olduğu için <strong>kapalı cezaevinde en az 3 ay</strong>";
-            const avantajAciklama = `Bu haktan yararlanabilmek için hükümlünün, ${kapaliCezaAciklama} kaldıktan sonra açık cezaevine ayrılma şartlarını taşıması gerekir. Bu hesaplama, bu şartların oluştuğu varsayımına dayanır.`;
-            finalHTML += `<div class="result-item special"><h3>DENETİMLİ SERBESTLİK TARİHİ (7456 S.K. Geçici Madde 10 Avantajıyla)</h3><p><strong>31/07/2023 tarihinden önceki suçlar için hak kazanılabilecek en erken tarih:</strong> <span class="${denetimAvantajTarihiClass}">${denetimAvantajTarihiDisplay}</span></p><p class="reason">${avantajAciklama}</p>${avantMinStayReason}</div>`;
-        }
-        resultsContainer.innerHTML = finalHTML;
-    }
+        let finalHTML = `<div class="result-item info"><h3>Mahsup Bilgileri</h3><p>Cezaevinde geçirilecek süreden düşülen toplam tutukluluk süresi: <strong>${toplamMahsupGun} gün</strong></p>${avantajGun > 0 ? `<p>Koşullu salıverilme hesabına eklenen avantaj süresi: <strong>${avantajGun} gün</strong> (Çocuk hükümlü indirimi)</p>` : ''}</div>`;
+        if (hakEderekTarihi) { finalHTML += `<div class="result-item"><h3>Hak Ederek Tahliye Tarihi</h3><p>Cezanın (mahsup sonrası) tamamen bittiği tarih: <span class="date">${wizard_formatDate(hakEderekTarihi)}</span></p></div>`; }
+        finalHTML += `<div class="result-item"><h3>Koşullu Salıverilme Tarihi</h3><p>İyi halli olarak cezaevinden şartlı çıkılabilecek tarih: <span class="date">${wizard_formatDate(kosulluSalivermeTarihi)}</span></p><p class="reason">${oranAciklama}</p></div>`;
+        finalHTML += `<div class="result-item"><h3>Denetimli Serbestlik Tarihi</h3><p>Denetimli serbestlik tedbiriyle cezaevinden çıkılabilecek tarih: <span class="${denetimTarihiClass}">${denetimTarihiDisplay}</span></p><p class="reason">${denetimAciklama}</p>${minStayReason}</div>`;
+        if (denetimAvantajTarihi) {
+            let denetimAvantajTarihiDisplay;
+            let denetimAvantajTarihiClass = "date";
+            let avantMinStayReason = minStayReason; 
+            if(denetimAvantajTarihi <= girisTarihi && avantMinStayReason === "") {
+                denetimAvantajTarihiDisplay = "GİR-ÇIK YAPACAK";
+                denetimAvantajTarihiClass = "date gir-cik";
+            } else {
+                denetimAvantajTarihiDisplay = wizard_formatDate(denetimAvantajTarihi);
+            }
+            const toplamCezaYil = data.cezaYil + (data.cezaAy / 12);
+            const kapaliCezaAciklama = (toplamCezaYil < 10) ? "toplam cezası 10 yıldan az olduğu için <strong>kapalı cezaevinde en az 1 ay</strong>" : "toplam cezası 10 yıl veya daha fazla olduğu için <strong>kapalı cezaevinde en az 3 ay</strong>";
+            const avantajAciklama = `Bu haktan yararlanabilmek için hükümlünün, ${kapaliCezaAciklama} kaldıktan sonra açık cezaevine ayrılma şartlarını taşıması gerekir. Bu hesaplama, bu şartların oluştuğu varsayımına dayanır.`;
+            finalHTML += `<div class="result-item special"><h3>DENETİMLİ SERBESTLİK TARİHİ (7456 S.K. Geçici Madde 10 Avantajıyla)</h3><p><strong>31/07/2023 tarihinden önceki suçlar için hak kazanılabilecek en erken tarih:</strong> <span class="${denetimAvantajTarihiClass}">${denetimAvantajTarihiDisplay}</span></p><p class="reason">${avantajAciklama}</p>${avantMinStayReason}</div>`;
+        }
+        resultsContainer.innerHTML = finalHTML;
+    }
 
-    // --- DİĞER UYGULAMALARIN SCRIPTLERI ---
+    // --- Basit Hesaplayıcı Scriptleri ---
     function parseDate1(dateStr) { let dateParts = dateStr.split(/[\/\.]/); if (dateParts.length === 3) { let day = parseInt(dateParts[0], 10); let month = parseInt(dateParts[1], 10); let year = parseInt(dateParts[2], 10); if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); } } if (dateStr.length === 8 && /^\d+$/.test(dateStr)) { let day = parseInt(dateStr.substring(0, 2), 10); let month = parseInt(dateStr.substring(2, 4), 10); let year = parseInt(dateStr.substring(4, 8), 10); if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); } } return null; }
     function formatDate1(date) { return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`; }
     function addSubtractDays() { const resultDiv = document.getElementById("result1"); const errorDiv = document.getElementById("error1"); resultDiv.textContent = ""; errorDiv.textContent = ""; const date1 = parseDate1(document.getElementById("date1").value); const daysToAdd = parseInt(document.getElementById("days").value); if (!date1) { errorDiv.textContent = "Geçersiz Tarih 1 formatı."; return; } if (isNaN(daysToAdd)) { errorDiv.textContent = "Geçersiz gün sayısı."; return; } date1.setDate(date1.getDate() + daysToAdd); resultDiv.textContent = "Yeni Tarih: " + formatDate1(date1); }
     function calculateDifference() { const resultDiv = document.getElementById("result1"); const errorDiv = document.getElementById("error1"); resultDiv.textContent = ""; errorDiv.textContent = ""; const date1 = parseDate1(document.getElementById("date1").value); const date2 = parseDate1(document.getElementById("date2").value); if (!date1) { errorDiv.textContent = "Geçersiz Tarih 1 formatı."; return; } if (!date2) { errorDiv.textContent = "Geçersiz Tarih 2 formatı."; return; } const diffInMs = Math.abs(date2.getTime() - date1.getTime()); resultDiv.textContent = "Fark: " + Math.ceil(diffInMs / 86400000) + " gün"; }
-    function addPeriod() { const container = document.getElementById('periodsContainer'); const newRow = document.createElement('div'); newRow.className = 'period-row'; newRow.innerHTML = `<input type="number" class="period-years" value="0" placeholder="Yıl" min="0"><input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11"><input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30"><select class="period-ratio"><option value="0.5">1/2</option><option value="0.6666666666666666">2/3</option><option value="0.75">3/4</option></select><button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>`; container.appendChild(newRow); }
-    function calculateDate() { if (!document.getElementById("startDate").value) { alert("Lütfen başlangıç tarihi seçin."); return; } const startDate = new Date(document.getElementById("startDate").value); let totalCalculatedDays = 0; document.querySelectorAll('#app2-container .period-row').forEach(row => { const periodDays = (parseInt(row.querySelector('.period-years').value) || 0) * 365 + (parseInt(row.querySelector('.period-months').value) || 0) * 30 + (parseInt(row.querySelector('.period-days').value) || 0); totalCalculatedDays += Math.floor(periodDays * parseFloat(row.querySelector('.period-ratio').value)); }); let prisonDays = parseInt(document.getElementById("prisonDays").value) || 0; if (prisonDays === 0 && document.getElementById("prisonStart").value && document.getElementById("prisonEnd").value) { prisonDays = Math.max(0, Math.ceil((new Date(document.getElementById("prisonEnd").value) - new Date(document.getElementById("prisonStart").value)) / (1000*60*60*24))); } totalCalculatedDays = Math.max(0, totalCalculatedDays - prisonDays); const resultDate = new Date(startDate); resultDate.setDate(startDate.getDate() + totalCalculatedDays); const resultDateString = formatDate2(resultDate); document.getElementById("result2").innerHTML = `<div class="result-item"><h3>Sonuç</h3><p><strong>Yatılacak Toplam Gün:</strong> ${totalCalculatedDays}</p><p><strong>Şartlı Tahliye Tarihi:</strong> ${resultDateString}</p></div>`; }
-    function formatDate2(date) { return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`; }
+
+    // --- Gelişmiş Hesaplayıcı Scriptleri (YENİ) ---
+    function addPeriod() {
+        const container = document.getElementById('periodsContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'period-row';
+        newRow.innerHTML = `
+        <input type="number" class="period-years" value="0" placeholder="Yıl" min="0">
+        <input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11">
+        <input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30">
+        <select class="period-ratio">
+            <option value="0.5">1/2</option>
+            <option value="0.6666666666666666">2/3</option>
+            <option value="0.75">3/4</option>
+        </select>
+        <button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>
+        `;
+        container.appendChild(newRow);
+    }
+
+    function calculateAdvancedDate() {
+        const startDateString = document.getElementById("startDate").value;
+        if (!startDateString) {
+            alert("Lütfen başlangıç tarihi seçin.");
+            return;
+        }
+        const startDate = new Date(startDateString);
+        
+        let totalCalculatedDays = 0;
+        const periodRows = document.querySelectorAll('#app2-container .period-row');
+        periodRows.forEach(row => {
+            const years = parseInt(row.querySelector('.period-years').value) || 0;
+            const months = parseInt(row.querySelector('.period-months').value) || 0;
+            const days = parseInt(row.querySelector('.period-days').value) || 0;
+            const ratio = parseFloat(row.querySelector('.period-ratio').value);
+            
+            const periodDays = (years * 365) + (months * 30) + days;
+            const calculatedDays = Math.floor(periodDays * ratio);
+            totalCalculatedDays += calculatedDays;
+        });
+
+        let prisonDays = parseInt(document.getElementById("prisonDays").value) || 0;
+        if (prisonDays === 0) {
+            const prisonStartStr = document.getElementById("prisonStart").value;
+            const prisonEndStr = document.getElementById("prisonEnd").value;
+            if (prisonStartStr && prisonEndStr) {
+                const prisonStart = new Date(prisonStartStr);
+                const prisonEnd = new Date(prisonEndStr);
+                prisonDays = Math.max(0, Math.floor((prisonEnd - prisonStart) / (1000 * 60 * 60 * 24)) + 1);
+            }
+        }
+
+        totalCalculatedDays = Math.max(0, totalCalculatedDays - prisonDays);
+
+        const resultDate = new Date(startDate);
+        resultDate.setDate(startDate.getDate() + totalCalculatedDays);
+        const resultDateString = formatDate2(resultDate);
+
+        document.getElementById("result2").innerHTML = `
+            <div class="result-item">
+            <h3>Hesaplama Sonuçları</h3>
+            <p><strong>Hesaplanan Toplam Gün:</strong> ${totalCalculatedDays} <small>(Cezaevi dönemi ${prisonDays} gün düşüldü)</small></p>
+            <p><strong>Sonuç Tarihi:</strong> ${resultDateString}</p>
+            </div>
+            
+            <div class="date-range">
+            <h3>Yıl Çıkarma <span class="tooltip">ℹ️<span class="tooltiptext">Mahkeme tarafından belirlenen yıl çıkarma miktarı</span></span></h3>
+            <select id="yearSubtraction" class="custom-select">
+                <option value="3">3 Yıl</option>
+                <option value="1">1 Yıl</option>
+            </select>
+            </div>
+            
+            <div class="date-range">
+            <h3>Denetim Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Denetimli serbestlik süresini tarih aralığı veya gün olarak giriniz</span></span></h3>
+            <div class="input-group">
+                <div style="flex: 1;">
+                <label>Başlangıç Tarihi:</label>
+                <input type="date" id="supervisionStart">
+                </div>
+                <div style="flex: 1;">
+                <label>Bitiş Tarihi:</label>
+                <input type="date" id="supervisionEnd">
+                </div>
+            </div>
+            <div class="input-group">
+                <span>VEYA gün olarak girin:</span>
+                <input type="number" id="supervisionDays" value="0" min="0" placeholder="Gün">
+            </div>
+            </div>
+            
+            <button onclick="finalComparison('${resultDateString}', ${totalCalculatedDays}, ${prisonDays})" style="background-color: var(--warning-color); width: 100%;">
+            <span style="font-size: 18px;">🔍 NİHAİ TARİHİ HESAPLA</span>
+            </button>
+        `;
+    }
+
+    function finalComparison(resultDateString, totalCalculatedDays, prisonDays) {
+        const subtractionYears = parseInt(document.getElementById("yearSubtraction").value);
+        const parts = resultDateString.split('/');
+        const resultDate = new Date(parts[2], parts[1]-1, parts[0]);
+        
+        let supervisionDays = parseInt(document.getElementById("supervisionDays").value) || 0;
+        if (supervisionDays === 0) {
+            const supervisionStartStr = document.getElementById("supervisionStart").value;
+            const supervisionEndStr = document.getElementById("supervisionEnd").value;
+            if (supervisionStartStr && supervisionEndStr) {
+                const supervisionStart = new Date(supervisionStartStr);
+                const supervisionEnd = new Date(supervisionEndStr);
+                supervisionDays = Math.max(0, Math.floor((supervisionEnd - supervisionStart) / (1000 * 60 * 60 * 24)) + 1);
+            }
+        }
+
+        const yearDays = (subtractionYears * 365) - supervisionDays;
+        const adjustedYearDays = Math.max(0, yearDays);
+        
+        const totalDaysToSubtract = adjustedYearDays;
+        
+        const finalDate = new Date(resultDate);
+        finalDate.setDate(resultDate.getDate() - totalDaysToSubtract);
+        
+        const finalDateString = formatDate2(finalDate);
+        const startDate = new Date(document.getElementById("startDate").value);
+
+        const diffInDays = Math.floor((finalDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        
+        const comparisonResult = diffInDays <= 0 
+            ? '<span class="green-bg">✅ Giriş-Çıkış (Tahliye günü)</span>' 
+            : `<span class="red-bg">⏳ ${diffInDays} gün yatar</span>`;
+        
+        document.getElementById("result2").innerHTML += `
+            <div class="result-item" style="margin-top: 20px; background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
+            <h3>Nihai Sonuç</h3>
+            <p><strong>Düzeltilmiş Yıl Günü:</strong> ${adjustedYearDays} <small>(${subtractionYears} yıl × 365 - ${supervisionDays} denetim günü)</small></p>
+            <p><strong>Cezaevi Günü:</strong> ${prisonDays} <small>(zaten hesaplanan toplam günden düşüldü)</small></p>
+            <p><strong>Toplam Çıkarılan Gün (yıl çıkarma):</strong> ${totalDaysToSubtract}</p>
+            <p><strong>Nihai Tahliye Tarihi:</strong> <span style="font-weight: bold; font-size: 18px;">${finalDateString}</span></p>
+            <p><strong>Karşılaştırma:</strong> ${comparisonResult}</p>
+            </div>
+        `;
+    }
+
+    function formatDate2(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // --- Hatırlatıcı Scriptleri ---
     let reminders = [];
     function loadReminders() { const savedReminders = localStorage.getItem('reminders'); if (savedReminders) { try { reminders = JSON.parse(savedReminders) || []; } catch(e) { reminders = []; } displayReminders(); } }
     function saveReminders() { localStorage.setItem('reminders', JSON.stringify(reminders)); }
