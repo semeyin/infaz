@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İnfaz Uygulamaları</title>
+<style>
+    /* --- Genel Sayfa Stilleri --- */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f2f5;
+        color: #333;
+    }
+
+    .page-title {
+        text-align: center;
+        color: #34495e;
+        margin-bottom: 25px;
+        font-size: 2em;
+    }
+
+    .main-layout {
+        display: flex;
+        gap: 25px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* --- Sol Menü (Sidebar) Stilleri --- */
+    .sidebar-nav {
+        flex: 0 0 280px; /* Kenar çubuğu genişliği */
+    }
+
+    .nav-btn {
+        display: block; width: 100%; box-sizing: border-box; background-color: #ffffff;
+        color: #34495e; padding: 15px 20px; border: 1px solid #ddd;
+        border-radius: 8px; cursor: pointer; margin-bottom: 10px;
+        font-size: 16px; text-align: left; text-decoration: none;
+        transition: all 0.3s; font-weight: 500;
+    }
+
+    .nav-btn:hover {
+        background-color: #f8f9fa; transform: translateX(5px); border-color: #3498db;
+    }
+    
+    .nav-btn.active {
+        background-color: #3498db; color: white; border-color: #2980b9;
+        font-weight: bold; box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    /* --- Sağ İçerik Alanı Stilleri --- */
+    .main-content {
+        flex-grow: 1; min-width: 0;
+    }
+
+    .app-content {
+        background-color: #ffffff; padding: 25px 30px; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .app-description {
+        background-color: #e9f7fe;
+        border-left: 4px solid #3498db;
+        padding: 10px 15px;
+        margin-bottom: 25px;
+        border-radius: 0 4px 4px 0;
+        font-size: 14px;
+        color: #2c3e50;
+    }
+
+    .hidden { display: none; }
+    
+    :root {
+        --primary-color: #3498db; --secondary-color: #2ecc71; --danger-color: #e74c3c;
+        --warning-color: #f39c12; --light-color: #ecf0f1; --dark-color: #34495e;
+        --border-radius: 8px; --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+
+    /* --- Wizard (İnfazı Bilmiyorum) Uygulaması Stilleri --- */
+    .wizard-step { display: none; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px; animation: fadeIn 0.5s ease-in-out; }
+    .wizard-step.active { display: block; }
+    .wizard-step h2 { color: #1e3a5f; text-align: center; margin-top:0; }
+    #app-wizard-container .form-group { margin-bottom: 20px; }
+    #app-wizard-container .form-group.inline { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+    #app-wizard-container .form-group.inline label { margin-bottom: 0; }
+    #app-wizard-container label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+    #app-wizard-container input[type="date"], #app-wizard-container input[type="number"], #app-wizard-container select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+    #app-wizard-container input[type="checkbox"] { width: 1.3em; height: 1.3em; }
+    #app-wizard-container .ceza-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    #app-wizard-container .radio-group label { display: inline-block; margin-right: 15px; font-weight: normal; }
+    #app-wizard-container .buttons { display: flex; justify-content: space-between; margin-top: 30px; }
+    #app-wizard-container .buttons button { padding: 12px 25px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+    #app-wizard-container .btn-next { background-color: #007bff; color: white; }
+    #app-wizard-container .btn-next:hover { background-color: #0056b3; }
+    #app-wizard-container .btn-prev { background-color: #6c757d; color: white; }
+    #app-wizard-container .btn-prev:hover { background-color: #5a6268; }
+    #app-wizard-container #resultsContainer { border-top: 2px solid #007bff; margin-top: 25px; padding-top: 20px; }
+    #app-wizard-container .result-item { background-color: #f8f9fa; border: 1px solid #dee2e6; border-left: 5px solid #007bff; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+    #app-wizard-container .result-item.special { border-left-color: #28a745; }
+    #app-wizard-container .result-item.info { border-left-color: #ffc107; }
+    #app-wizard-container .result-item h3 { text-align: left; margin: 0 0 10px 0; font-size: 18px; color: #0056b3; }
+    #app-wizard-container .result-item p { margin: 5px 0; font-size: 16px; word-break: break-word; }
+    #app-wizard-container .result-item .date { font-weight: bold; color: #d9534f; background-color: #f2f2f2; padding: 3px 8px; border-radius: 5px; }
+    #app-wizard-container .result-item .date.gir-cik { color: #28a745; background-color: #eaf7ec; }
+    #app-wizard-container .result-item .reason { font-size: 13px; color: #555; margin-top: 8px; font-style: italic; }
+    #app-wizard-container .question-group { background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    #app-wizard-container .question-group h3 { font-size: 16px; margin-top: 0; text-align: left; color: #333; }
+    #app-wizard-container .disclaimer { font-size: 12px; text-align: center; color: #dc3545; margin-top: 25px; font-weight: bold; padding: 10px; background-color: #f8d7da; border-radius: 8px; }
+
+    /* --- Uygulama 1: Basit Tarih Hesaplayıcı Stilleri --- */
+    #app1-container h1 { margin-top:0; }
+    #app1-container label { display: block; margin-bottom: 5px; font-weight: bold; }
+    #app1-container input[type="text"], #app1-container input[type="number"] { width: 100%; max-width: 350px; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+    #app1-container button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; font-size: 1em; }
+    #app1-container button:hover { background-color: #3e8e41; }
+    #app1-container #result1 { margin-top: 20px; font-weight: bold; font-size: 1.1em; background-color: #e8f5e9; padding: 10px; border-radius: 4px; }
+    #app1-container .error { color: #d32f2f; font-weight: bold; margin-top: 10px; }
+
+    /* --- Uygulama 2: Gelişmiş Tarih Hesaplayıcı Stilleri (YENİ) --- */
+    #app2-container { line-height: 1.6; }
+    #app2-container h1 { color: var(--dark-color); text-align: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid var(--primary-color); margin-top:0;}
+    #app2-container h3 { color: var(--primary-color); margin-top: 0; }
+    #app2-container label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark-color); }
+    #app2-container input[type="number"], #app2-container input[type="date"], #app2-container select { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: var(--border-radius); box-sizing: border-box; font-size: 16px; transition: border-color 0.3s; }
+    #app2-container input:focus, #app2-container select:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+    #app2-container button { background-color: var(--primary-color); color: white; padding: 12px 24px; border: none; border-radius: var(--border-radius); cursor: pointer; margin-bottom: 15px; font-size: 16px; font-weight: 600; transition: all 0.3s; box-shadow: var(--box-shadow); }
+    #app2-container button:hover { background-color: #2980b9; transform: translateY(-2px); }
+    #app2-container #result2 { margin-top: 30px; padding: 20px; border: 2px solid #ddd; border-radius: var(--border-radius); background-color: #fdfdfd; animation: fadeIn 0.5s ease-out; }
+    #app2-container .green-bg { background-color: var(--secondary-color); color: white; padding: 8px 15px; display: inline-block; border-radius: var(--border-radius); font-weight: bold; }
+    #app2-container .red-bg { background-color: var(--danger-color); color: white; padding: 8px 15px; display: inline-block; border-radius: var(--border-radius); font-weight: bold; }
+    #app2-container .date-range { margin: 20px 0; padding: 20px; border: 2px solid #eee; border-radius: var(--border-radius); background-color: #f8f9fa; }
+    #app2-container .input-group { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;}
+    #app2-container .input-group input { flex: 1; min-width: 150px; }
+    #app2-container .input-group span { white-space: nowrap; font-weight: 600; color: var(--dark-color); }
+    #app2-container .period-container { margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: var(--border-radius); }
+    #app2-container .period-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; padding: 10px; background-color: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
+    #app2-container .period-row input, #app2-container .period-row select { margin-bottom: 0; flex: 1; min-width: 100px;}
+    #app2-container .add-period-btn { background-color: var(--secondary-color); width: 100%; margin-top: 10px; }
+    #app2-container .add-period-btn:hover { background-color: #27ae60; }
+    #app2-container .remove-period-btn { background-color: var(--danger-color); padding: 10px 15px !important; margin-left: auto; flex-grow: 0 !important; flex-basis: auto !important; }
+    #app2-container .remove-period-btn:hover { background-color: #c0392b; }
+    #app2-container .result-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+    #app2-container .result-item:last-child { border-bottom: none; }
+    #app2-container .tooltip { position: relative; display: inline-block; cursor: help; }
+    #app2-container .tooltip .tooltiptext { visibility: hidden; width: 200px; background-color: var(--dark-color); color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 14px; font-weight: normal; }
+    #app2-container .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+    
+    /* --- Uygulama 3: Hatırlatıcı Stilleri --- */
+    #app3-container h1 { margin-top:0; }
+    #app3-container label { display: block; margin-bottom: 5px; font-weight: bold; }
+    #app3-container input[type="text"], #app3-container input[type="number"], #app3-container select { width: 100%; max-width: 350px; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em;}
+    #app3-container button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px; font-size: 1em;}
+    #app3-container button:hover { background-color: #3e8e41; }
+    #app3-container #reminders { margin-top: 20px; }
+    #app3-container .reminder-item { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+    #app3-container .reminder-item.overdue { background-color: #f44336; color: white; border-color: #d32f2f; animation: blinker 1.5s linear infinite; }
+    @keyframes blinker { 50% { background-color: white; color: black; } }
+    #app3-container .reminder-item.done { background-color: #f5f5f5; color: #757575; border-left: 5px solid #4caf50; }
+    #app3-container .reminder-item span { flex-grow: 1; }
+    #app3-container .reminder-item button { margin: 0; }
+    #app3-container .error { color: #d32f2f; font-weight: bold; margin-top: 10px; }
+
+    /* --- Mobil Uyum (Responsive) Stilleri --- */
+    @media (max-width: 992px) {
+        .main-layout { flex-direction: column; }
+        .sidebar-nav { flex: 1 1 auto; display: flex; flex-wrap: wrap; gap: 10px; }
+        .nav-btn { flex-grow: 1; }
+    }
+    @media (max-width: 768px) {
+        body { padding: 10px; }
+        .page-title { font-size: 1.5em; }
+        .app-content { padding: 15px; }
+        /* Wizard mobil uyum */
+        #app-wizard-container .ceza-group { grid-template-columns: 1fr; }
+        #app-wizard-container .form-group.inline { flex-direction: column; align-items: flex-start; gap: 5px; }
+        #app-wizard-container .buttons { flex-direction: column-reverse; gap: 10px; }
+        #app-wizard-container .buttons button { width: 100%; }
+        /* Gelişmiş Hesaplayıcı mobil uyum */
+        #app2-container .input-group { flex-direction: column; align-items: stretch; }
+        #app2-container .period-row { flex-direction: column; align-items: stretch; }
+        #app2-container .remove-period-btn { width: 100%; margin-top: 10px; }
+    }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">İNFAZ İÇİN SIK KULLANILAN UYGULAMALAR</h1>
+
+<div class="main-layout">
+    <nav class="sidebar-nav">
+        <button id="nav-btn-wizard" class="nav-btn active" onclick="showApp('app-wizard-container', this)">İnfazı Hiç Bilmiyorum</button>
+        <button id="nav-btn-1" class="nav-btn" onclick="showApp('app1-container', this)">Basit Tarih Hesaplayıcı</button>
+        <button id="nav-btn-2" class="nav-btn" onclick="showApp('app2-container', this)">Gelişmiş Tarih Hesaplayıcı</button>
+        <button id="nav-btn-3" class="nav-btn" onclick="showApp('app3-container', this)">Hatırlatıcı KF1500</button>
+        <button id="nav-btn-search" class="nav-btn" onclick="showApp('app-search-container', this)">Adliye Arama Motoru</button>
+        
+        <a href="https://www.mevzuat.gov.tr/mevzuat?MevzuatNo=5275&MevzuatTur=1&MevzuatTertip=5" class="nav-btn" target="_blank" rel="noopener noreferrer">CGTİHK (5275 S.K.)</a>
+        <a href="https://www.mevzuat.gov.tr/mevzuat?MevzuatNo=5237&MevzuatTur=1&MevzuatTertip=5" class="nav-btn" target="_blank" rel="noopener noreferrer">TCK (5237 S.K.)</a>
+    </nav>
+
+    <main class="main-content">
+    <div id="app-search-container" class="app-content hidden">
+            <div class="app-description">
+                <strong>Adliye Arama Motoru:</strong> Bir ilçenin adli yönden hangi adliyeye ve hangi Ağır Ceza Merkezi'ne (ACM) bağlı olduğunu hızlıca bulmanızı sağlar.
+            </div>
+            <h1>Adliye Arama Motoru</h1>
+            <input type="text" id="search-input" placeholder="İlçe, bağlı adliye veya ACM adı yazarak arayın...">
+            <div id="search-results"></div>
+        </div>
+        
+        <div id="app-wizard-container" class="app-content">
+            <div class="app-description">
+                <strong>İnfazı Hiç Bilmiyorum Sihirbazı:</strong> İnfaz hukukunun karmaşık kurallarını bilmeyen kullanıcılar için tasarlanmıştır. Sizi adım adım doğru sorularla yönlendirerek en doğru sonuca ulaştırmayı hedefler.
+            </div>
+            <form id="infazForm">
+                <div id="step1" class="wizard-step active">
+                    <h2>Adım 1: Ceza ve Tarih Bilgileri</h2>
+                    <div class="form-group"><label for="cezaTuru">Ceza Türü</label><select id="cezaTuru"><option value="sureli">Süreli Hapis</option><option value="muebbet">Müebbet Hapis</option><option value="agirlastirilmis">Ağırlaştırılmış Müebbet Hapis</option></select></div>
+                    <div id="sureliHapisGrubu" class="form-group"><label>Süreli Hapis Cezası Miktarı</label><div class="ceza-group"><input type="number" id="cezaYil" placeholder="Yıl" min="0"><input type="number" id="cezaAy" placeholder="Ay" min="0"><input type="number" id="cezaGun" placeholder="Gün" min="0"></div></div>
+                    <div class="form-group"><label for="sucTarihi">Suçun İşlendiği Tarih</label><input type="date" id="sucTarihi"></div>
+                    <div class="form-group"><label for="girisTarihi">Cezanın İnfazına Başlama Tarihi</label><input type="date" id="girisTarihi"></div>
+                    <div class="buttons"><span></span><button type="button" class="btn-next" onclick="wizard_goToStep(2)">İleri &rarr;</button></div>
+                </div>
+                <div id="step2" class="wizard-step">
+                    <h2>Adım 2: Hükümlüye İlişkin Özel Durumlar</h2>
+                    <div class="question-group"><h3>Tekerrür Durumu:</h3><p>Daha önceden kesinleşmiş bir mahkumiyetiniz varken bu suçu işlediyseniz "Evet" seçiniz.</p><div class="radio-group"><label><input type="radio" name="tekerrur" value="yok" checked> Yok</label><label><input type="radio" name="tekerrur" value="var"> Tekerrür Var</label><label><input type="radio" name="tekerrur" value="ikinci"> İkinci Defa Tekerrür Var</label></div></div>
+                    <div class="question-group" id="special-conditions-group">
+                        <h3>Yaş ve Diğer Durumlar:</h3>
+                        <div class="form-group inline"><label>Suç işlendiğinde 18 yaşından küçük müydünüz?</label><input type="checkbox" id="isCocuk" onchange="wizard_toggleMahsupForm(); wizard_uncheckNoSpecialConditions();"></div>
+                        <div class="form-group inline"><label>0-6 yaş grubunda çocuğunuz var mı (Kadın hükümlüler için)?</label><input type="checkbox" id="hasCocuk" onchange="wizard_uncheckNoSpecialConditions()"></div>
+                        <div class="form-group inline"><label>Hayatını yalnız idame ettiremeyecek kadar ağır hastalık, engellilik veya kocama durumu var mı?</label><input type="checkbox" id="isHasta" onchange="wizard_uncheckNoSpecialConditions()"></div>
+                        <hr>
+                        <div class="form-group inline"><label for="noSpecialConditions"><strong>Yukarıdaki özel durumlardan hiçbiri mevcut değil.</strong></label><input type="checkbox" id="noSpecialConditions" onchange="wizard_handleNoSpecialConditions(this)"></div>
+                    </div>
+                    <div class="buttons"><button type="button" class="btn-prev" onclick="wizard_goToStep(1)">&larr; Geri</button><button type="button" class="btn-next" onclick="wizard_goToStep(3)">İleri &rarr;</button></div>
+                </div>
+                <div id="step3" class="wizard-step">
+                    <h2>Adım 3: Mahsup Edilecek Süreler (Varsa)</h2>
+                    <div id="adultMahsupGrubu"><div class="form-group"><label for="mahsupAdult">Ceza kesinleşmeden önce tutuklu kalınan TOPLAM süre (Gün olarak)</label><input type="number" id="mahsupAdult" placeholder="Örn: 350" min="0"></div></div>
+                    <div id="cocukMahsupGrubu" style="display:none;"><div class="question-group"><h3>Yaşa Göre Tutukluluk Süreleri</h3><p>Lütfen ceza kesinleşmeden önce tutuklu kaldığınız süreleri yaşınıza göre ayrı ayrı gün olarak giriniz.</p><div class="form-group"><label>15 yaşından KÜÇÜKKEN tutuklu kalınan süre (Gün)</label><input type="number" id="mahsupUnder15" min="0" placeholder="0"></div><div class="form-group"><label>15-18 yaş ARASINDAYKEN tutuklu kalınan süre (Gün)</label><input type="number" id="mahsup15to18" min="0" placeholder="0"></div></div></div>
+                    <div class="buttons"><button type="button" class="btn-prev" onclick="wizard_goToStep(2)">&larr; Geri</button><button type="button" class="btn-next" onclick="wizard_goToStep(4)">İleri &rarr;</button></div>
+                </div>
+                <div id="step4" class="wizard-step">
+                    <h2>Adım 4: Suç Tipinin Belirlenmesi</h2>
+                    <p>Lütfen aşağıdaki suçlardan size uyanları işaretleyiniz. Bu seçim, koşullu salıverilme oranınızı doğrudan etkileyecektir.</p>
+                    <div class="question-group" id="wizard-crime-list">
+                        <div class="form-group inline"><label>Kasten Öldürme (TCK 81-83), Neticesi Sebebiyle Ağırlaşmış Yaralama, İşkence veya Eziyet mi?</label><input type="checkbox" id="isKastenOldurme" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Eşe Karşı Kasten Yaralama (TCK 86/3-a) suçu mu?</label><input type="checkbox" id="isEseKarsiYaralama" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Cinsel Dokunulmazlığa Karşı Suçlar (TCK 102-105) mı?</label><input type="checkbox" id="isCinsel" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Özel Hayata ve Hayatın Gizli Alanına Karşı Suçlar (TCK 132-138) mı?</label><input type="checkbox" id="isOzelHayat" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Uyuşturucu veya Uyarıcı Madde İmal ve Ticareti (TCK 188) mi?</label><input type="checkbox" id="isUyusturucu" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Devlet Güvenliği, Anayasal Düzen, Milli Savunma veya Devlet Sırlarına Karşı Suçlar mı?</label><input type="checkbox" id="isDevlet" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Terörle Mücadele Kanunu (3713 sayılı) kapsamındaki bir suç mu?</label><input type="checkbox" id="isTeror" onchange="wizard_handleOtherCrimes()"></div>
+                        <div class="form-group inline"><label>Suç İşlemek İçin Örgüt Kurma/Yönetme veya Örgüt Faaliyeti Kapsamında işlenen bir suç mu?</label><input type="checkbox" id="isOrgut" onchange="wizard_handleOtherCrimes()"></div>
+                        <hr>
+                        <div class="form-group inline"><label for="isAdiSuc"><strong>Yukarıdaki suçlardan hiçbiri değil.</strong></label><input type="checkbox" id="isAdiSuc" onchange="wizard_handleAdiSuc(this)"></div>
+                    </div>
+                    <div class="buttons"><button type="button" class="btn-prev" onclick="wizard_goToStep(3)">&larr; Geri</button><button type="button" class="btn-next" onclick="wizard_hesapla()">Hesapla ve Sonuçları Göster</button></div>
+                </div>
+                <div id="step5" class="wizard-step">
+                    <h2>Hesaplama Sonuçları</h2>
+                    <div id="resultsContainer"></div>
+                    <div class="disclaimer">UYARI: Bu program, kanun maddelerinin basitleştirilmiş bir yorumunu içeren bir simülasyon aracıdır. Karmaşık ve istisnai durumlar bulunabilir. Yapılan hesaplamalar bilgilendirme amaçlı olup hiçbir hukuki ve resmi geçerliliği yoktur. Kesin bilgi için bir avukata veya ilgili adli mercilere başvurunuz.</div>
+                    <div class="buttons"><button type="button" class="btn-prev" onclick="location.reload()">Yeni Hesaplama</button></div>
+                </div>
+            </form>
+        </div>
+        
+        <div id="app1-container" class="app-content hidden">
+            <div class="app-description">
+                <strong>Basit Tarih Hesaplayıcı:</strong> İki tarih arasındaki farkı bulmak veya bir tarihe belirli bir gün ekleyip/çıkarmak için kullanılır. Hızlı ve temel hesaplamalar için idealdir.
+            </div>
+            <h1>Tarih Hesaplayıcı</h1>
+            <label for="date1">1. Tarih (GG/AA/YYYY):</label><input type="text" id="date1">
+            <label for="date2">2. Tarih (GG/AA/YYYY):</label><input type="text" id="date2">
+            <label for="days">Gün Ekle/Çıkar (1. Tarihten):</label><input type="number" id="days">
+            <br><button onclick="addSubtractDays()">Gün Ekle/Çıkar</button><button onclick="calculateDifference()">Fark Hesapla</button>
+            <div id="result1"></div><div id="error1" class="error"></div>
+        </div>
+
+        <div id="app2-container" class="app-content hidden">
+            <div class="app-description">
+                <strong>Gelişmiş Tarih Hesaplayıcı:</strong> Birden fazla cezası olan veya farklı infaz oranlarına tabi hükümlüler için profesyonel bir araçtır. Cezaları toplayarak tek bir koşullu salıverilme tarihi hesaplar.
+            </div>
+            <h1>Gelişmiş Tarih Hesaplayıcı</h1>
+
+            <div class="period-container" id="periodsContainer">
+              <h3>Dönemler <span class="tooltip">ℹ️<span class="tooltiptext">Her dönem için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
+              <div class="period-row">
+                <input type="number" class="period-years" value="0" placeholder="Yıl" min="0">
+                <input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11">
+                <input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30">
+                <select class="period-ratio">
+                  <option value="0.5">1/2</option>
+                  <option value="0.6666666666666666">2/3</option>
+                  <option value="0.75">3/4</option>
+                </select>
+                <button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>
+              </div>
+            </div>
+            <button class="add-period-btn" onclick="addPeriod()">+ Yeni Dönem Ekle</button>
+          
+            <div class="date-range">
+              <h3>Cezaevi Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
+              <div class="input-group">
+                <div style="flex: 1;">
+                  <label>Başlangıç Tarihi:</label>
+                  <input type="date" id="prisonStart">
+                </div>
+                <div style="flex: 1;">
+                  <label>Bitiş Tarihi:</label>
+                  <input type="date" id="prisonEnd">
+                </div>
+              </div>
+              <div class="input-group">
+                <span>VEYA gün olarak girin:</span>
+                <input type="number" id="prisonDays" value="0" min="0" placeholder="Gün">
+              </div>
+            </div>
+          
+            <label for="startDate">Başlangıç Tarihi:</label>
+            <input type="date" id="startDate">
+          
+            <button onclick="calculateAdvancedDate()" style="background-color: var(--secondary-color); width: 100%; padding: 15px;">
+              <span style="font-size: 18px;">⏳ HESAPLA</span>
+            </button>
+          
+            <div id="result2"></div>
+        </div>
+
+        <div id="app3-container" class="app-content hidden">
+            <div class="app-description">
+                <strong>Hatırlatıcı KF1500:</strong> Adli yazışmaların (hapse çevirme, yakalama, tekit vb.) son tarihlerini takip etmek için kullanılır. Süresi gelen veya geçen işleri size bildirir.
+            </div>
+            <h1>Hatırlatıcı KF1500</h1>
+            <label for="fileNumber">Dosya Numarası:</label><input type="text" id="fileNumber">
+            <label for="correspondenceType">Ne hatırlamak istiyorsun?</label><select id="correspondenceType"><option value="Hapse Çevirme">Hapse Çevirme</option><option value="Yakalama">Yakalama</option><option value="Tekit">Tekit</option></select>
+            <label for="dueDateType">Gün mü Tarih mi?:</label><select id="dueDateType"><option value="days">... gün içinde</option><option value="date">... tarihinde (GG/AA/YYYY)</option></select>
+            <label for="dueDateValue">Gün ya da Tarihi Gir:</label><input type="text" id="dueDateValue" placeholder="örn: 30 veya 01/01/2025">
+            <br><button onclick="addReminder()">Hatırlatma Ekle</button><button onclick="removeCompleted()" style="background-color:#ff5722">Tamamlananları Sil</button>
+            <h2>İşlem Yapılacaklar:</h2>
+            <div id="reminders"></div><div id="error3" class="error"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- GENEL KONTROL FONKSİYONU ---
+    function showApp(appIdToShow, clickedButton) { if(document.getElementById(appIdToShow)){ document.querySelectorAll('.app-content').forEach(app => app.classList.add('hidden')); document.querySelectorAll('.nav-btn').forEach(button => button.classList.remove('active')); clickedButton.classList.add('active'); document.getElementById(appIdToShow).classList.remove('hidden'); } }
+
+    // --- ADLİYE ARAMA MOTORU SCRIPTLERI ---
+    /*
+     UYARI: Aşağıdaki boş diziye ('[ ]') kendi adliye veri listenizi yapıştırın.
+     Örnek format: { ilce: 'Adana', bagliAdliye: 'Adana', acm: 'Adana' },
+    */
+    const adliyeVeriTabani = [
+{ ilce: 'Adana', bagliAdliye: 'Adana', acm: 'Adana' },
+        { ilce: 'Karaisalı', bagliAdliye: 'Karaisalı', acm: 'Adana' },
+        { ilce: 'Karataş', bagliAdliye: 'Karataş', acm: 'Adana' },
+        { ilce: 'Çukurova', bagliAdliye: 'Adana', acm: 'Adana' },
+        { ilce: 'Sarıçam', bagliAdliye: 'Adana', acm: 'Adana' },
+        { ilce: 'Seyhan', bagliAdliye: 'Adana', acm: 'Adana' },
+        { ilce: 'Yüreğir', bagliAdliye: 'Adana', acm: 'Adana' },
+        { ilce: 'Adıyaman', bagliAdliye: 'Adıyaman', acm: 'Adıyaman' },
+        { ilce: 'Besni', bagliAdliye: 'Besni', acm: 'Adıyaman' },
+        { ilce: 'Gerger', bagliAdliye: 'Gerger', acm: 'Adıyaman' },
+        { ilce: 'Gölbaşı (Adıyaman)', bagliAdliye: 'Gölbaşı (Adıyaman)', acm: 'Adıyaman' },
+        { ilce: 'Kahta', bagliAdliye: 'Kahta', acm: 'Adıyaman' },
+        { ilce: 'Çelikhan', bagliAdliye: 'Adıyaman', acm: 'Adıyaman' },
+        { ilce: 'Samsat', bagliAdliye: 'Adıyaman', acm: 'Adıyaman' },
+        { ilce: 'Sincik', bagliAdliye: 'Kahta', acm: 'Adıyaman' },
+        { ilce: 'Tut', bagliAdliye: 'Gölbaşı (Adıyaman)', acm: 'Adıyaman' },
+        { ilce: 'Afyonkarahisar', bagliAdliye: 'Afyonkarahisar', acm: 'Afyonkarahisar' },
+        { ilce: 'İscehisar', bagliAdliye: 'İscehisar', acm: 'Afyonkarahisar' },
+        { ilce: 'Sandıklı', bagliAdliye: 'Sandıklı', acm: 'Afyonkarahisar' },
+        { ilce: 'Sinanpaşa', bagliAdliye: 'Sinanpaşa', acm: 'Afyonkarahisar' },
+        { ilce: 'Şuhut', bagliAdliye: 'Şuhut', acm: 'Afyonkarahisar' },
+        { ilce: 'Bayat (Afyonkarahisar)', bagliAdliye: 'İscehisar', acm: 'Afyonkarahisar' },
+        { ilce: 'Çobanlar', bagliAdliye: 'Afyonkarahisar', acm: 'Afyonkarahisar' },
+        { ilce: 'Evciler', bagliAdliye: 'Sandıklı', acm: 'Afyonkarahisar' },
+        { ilce: 'Hocalar', bagliAdliye: 'Sandıklı', acm: 'Afyonkarahisar' },
+        { ilce: 'İhsaniye', bagliAdliye: 'Afyonkarahisar', acm: 'Afyonkarahisar' },
+        { ilce: 'Kızılören', bagliAdliye: 'Sandıklı', acm: 'Afyonkarahisar' },
+        { ilce: 'Ağrı', bagliAdliye: 'Ağrı', acm: 'Ağrı' },
+        { ilce: 'Eleşkirt', bagliAdliye: 'Eleşkirt', acm: 'Ağrı' },
+        { ilce: 'Taşlıçay', bagliAdliye: 'Taşlıçay', acm: 'Ağrı' },
+        { ilce: 'Hamur', bagliAdliye: 'Ağrı', acm: 'Ağrı' },
+        { ilce: 'Akhisar', bagliAdliye: 'Akhisar', acm: 'Manisa' },
+        { ilce: 'Gördes', bagliAdliye: 'Gördes', acm: 'Manisa' },
+        { ilce: 'Kırkağaç', bagliAdliye: 'Kırkağaç', acm: 'Manisa' },
+        { ilce: 'Soma', bagliAdliye: 'Soma', acm: 'Manisa' },
+        { ilce: 'Gölmarmara', bagliAdliye: 'Akhisar', acm: 'Akhisar' },
+        { ilce: 'Aksaray', bagliAdliye: 'Aksaray', acm: 'Aksaray' },
+        { ilce: 'Eskil', bagliAdliye: 'Eskil', acm: 'Aksaray' },
+        { ilce: 'Ortaköy (Aksaray)', bagliAdliye: 'Ortaköy (Aksaray)', acm: 'Aksaray' },
+        { ilce: 'Şereflikoçhisar', bagliAdliye: 'Şereflikoçhisar', acm: 'Ankara' },
+        { ilce: 'Ağaçören', bagliAdliye: 'Ortaköy (Aksaray)', acm: 'Aksaray' },
+        { ilce: 'Evren', bagliAdliye: 'Şereflikoçhisar', acm: 'Aksaray' },
+        { ilce: 'Gülağaç', bagliAdliye: 'Aksaray', acm: 'Aksaray' },
+        { ilce: 'Güzelyurt', bagliAdliye: 'Aksaray', acm: 'Aksaray' },
+        { ilce: 'Sarıyahşi', bagliAdliye: 'Şereflikoçhisar', acm: 'Aksaray' },
+        { ilce: 'Akşehir', bagliAdliye: 'Akşehir', acm: 'Konya' },
+        { ilce: 'Doğanhisar', bagliAdliye: 'Doğanhisar', acm: 'Konya' },
+        { ilce: 'Ilgın', bagliAdliye: 'Ilgın', acm: 'Konya' },
+        { ilce: 'Yunak', bagliAdliye: 'Yunak', acm: 'Konya' },
+        { ilce: 'Çeltik', bagliAdliye: 'Yunak', acm: 'Akşehir' },
+        { ilce: 'Tuzlukçu', bagliAdliye: 'Akşehir', acm: 'Akşehir' },
+        { ilce: 'Alanya', bagliAdliye: 'Alanya', acm: 'Antalya' },
+        { ilce: 'Gazipaşa', bagliAdliye: 'Gazipaşa', acm: 'Antalya' },
+        { ilce: 'Alaşehir', bagliAdliye: 'Alaşehir', acm: 'Manisa' },
+        { ilce: 'Sarıgöl', bagliAdliye: 'Sarıgöl', acm: 'Manisa' },
+        { ilce: 'Amasya', bagliAdliye: 'Amasya', acm: 'Amasya' },
+        { ilce: 'Gümüşhacıköy', bagliAdliye: 'Gümüşhacıköy', acm: 'Amasya' },
+        { ilce: 'Merzifon', bagliAdliye: 'Merzifon', acm: 'Amasya' },
+        { ilce: 'Suluova', bagliAdliye: 'Suluova', acm: 'Amasya' },
+        { ilce: 'Taşova', bagliAdliye: 'Taşova', acm: 'Amasya' },
+        { ilce: 'Göynücek', bagliAdliye: 'Amasya', acm: 'Amasya' },
+        { ilce: 'Hamamözü', bagliAdliye: 'Gümüşhacıköy', acm: 'Amasya' },
+        { ilce: 'Ankara', bagliAdliye: 'Ankara', acm: 'Ankara' },
+        { ilce: 'Akyurt', bagliAdliye: 'Akyurt', acm: 'Ankara' },
+        { ilce: 'Bala', bagliAdliye: 'Bala', acm: 'Ankara' },
+        { ilce: 'Çubuk', bagliAdliye: 'Çubuk', acm: 'Ankara' },
+        { ilce: 'Elmadağ', bagliAdliye: 'Elmadağ', acm: 'Ankara' },
+        { ilce: 'Gölbaşı (Ankara)', bagliAdliye: 'Gölbaşı (Ankara)', acm: 'Ankara' },
+        { ilce: 'Haymana', bagliAdliye: 'Haymana', acm: 'Ankara' },
+        { ilce: 'Kalecik', bagliAdliye: 'Kalecik', acm: 'Ankara' },
+        { ilce: 'Polatlı', bagliAdliye: 'Polatlı', acm: 'Ankara' },
+        { ilce: 'Altındağ', bagliAdliye: 'Ankara', acm: 'Ankara' },
+        { ilce: 'Çankaya', bagliAdliye: 'Ankara', acm: 'Ankara' },
+        { ilce: 'Keçiören', bagliAdliye: 'Ankara', acm: 'Ankara' },
+        { ilce: 'Mamak', bagliAdliye: 'Ankara', acm: 'Ankara' },
+        { ilce: 'Pursaklar', bagliAdliye: 'Ankara', acm: 'Ankara' },
+        { ilce: 'Yenimahalle', bagliAdliye: 'Ankara', acm: 'Ankara' },
+        { ilce: 'Ankara Batı', bagliAdliye: 'Ankara Batı', acm: 'Ankara' },
+        { ilce: 'Beypazarı', bagliAdliye: 'Beypazarı', acm: 'Ankara' },
+        { ilce: 'Kahramankazan', bagliAdliye: 'Kahramankazan', acm: 'Ankara' },
+        { ilce: 'Kızılcahamam', bagliAdliye: 'Kızılcahamam', acm: 'Ankara' },
+        { ilce: 'Nallıhan', bagliAdliye: 'Nallıhan', acm: 'Ankara' },
+        { ilce: 'Ayaş', bagliAdliye: 'Ankara Batı', acm: 'Ankara Batı' },
+        { ilce: 'Çamlıdere', bagliAdliye: 'Kızılcahamam', acm: 'Ankara Batı' },
+        { ilce: 'Etimesgut', bagliAdliye: 'Ankara Batı', acm: 'Ankara Batı' },
+        { ilce: 'Güdül', bagliAdliye: 'Beypazarı', acm: 'Ankara Batı' },
+        { ilce: 'Antalya', bagliAdliye: 'Antalya', acm: 'Antalya' },
+        { ilce: 'Kemer', bagliAdliye: 'Kemer', acm: 'Antalya' },
+        { ilce: 'Korkuteli', bagliAdliye: 'Korkuteli', acm: 'Antalya' },
+        { ilce: 'Aksu (Antalya)', bagliAdliye: 'Antalya', acm: 'Antalya' },
+        { ilce: 'Döşemealtı', bagliAdliye: 'Antalya', acm: 'Antalya' },
+        { ilce: 'Kepez', bagliAdliye: 'Antalya', acm: 'Antalya' },
+        { ilce: 'Konyaaltı', bagliAdliye: 'Antalya', acm: 'Antalya' },
+        { ilce: 'Muratpaşa', bagliAdliye: 'Antalya', acm: 'Antalya' },
+        { ilce: 'Ardahan', bagliAdliye: 'Ardahan', acm: 'Ardahan' },
+        { ilce: 'Göle', bagliAdliye: 'Göle', acm: 'Ardahan' },
+        { ilce: 'Hanak', bagliAdliye: 'Hanak', acm: 'Ardahan' },
+        { ilce: 'Posof', bagliAdliye: 'Posof', acm: 'Ardahan' },
+        { ilce: 'Çıldır', bagliAdliye: 'Ardahan', acm: 'Ardahan' },
+        { ilce: 'Darnal', bagliAdliye: 'Hanak', acm: 'Ardahan' },
+        { ilce: 'Artvin', bagliAdliye: 'Artvin', acm: 'Artvin' },
+        { ilce: 'Arhavi', bagliAdliye: 'Arhavi', acm: 'Artvin' },
+        { ilce: 'Borçka', bagliAdliye: 'Borçka', acm: 'Artvin' },
+        { ilce: 'Hopa', bagliAdliye: 'Hopa', acm: 'Artvin' },
+        { ilce: 'Şavşat', bagliAdliye: 'Şavşat', acm: 'Artvin' },
+        { ilce: 'Yusufeli', bagliAdliye: 'Yusufeli', acm: 'Artvin' },
+        { ilce: 'Ardanuç', bagliAdliye: 'Artvin', acm: 'Artvin' },
+        { ilce: 'Murgul', bagliAdliye: 'Borçka', acm: 'Artvin' },
+        { ilce: 'Aydın', bagliAdliye: 'Aydın', acm: 'Aydın' },
+        { ilce: 'Çine', bagliAdliye: 'Çine', acm: 'Aydın' },
+        { ilce: 'Germencik', bagliAdliye: 'Germencik', acm: 'Aydın' },
+        { ilce: 'Efeler', bagliAdliye: 'Aydın', acm: 'Aydın' },
+        { ilce: 'İncirliova', bagliAdliye: 'Aydın', acm: 'Aydın' },
+        { ilce: 'Karpuzlu', bagliAdliye: 'Çine', acm: 'Aydın' },
+        { ilce: 'Koçarlı', bagliAdliye: 'Aydın', acm: 'Aydın' },
+        { ilce: 'Köşk', bagliAdliye: 'Aydın', acm: 'Aydın' },
+        { ilce: 'Bafra', bagliAdliye: 'Bafra', acm: 'Samsun' },
+        { ilce: 'Alaçam', bagliAdliye: 'Alaçam', acm: 'Samsun' },
+        { ilce: '19 Mayıs', bagliAdliye: 'Bafra', acm: 'Bafra' },
+        { ilce: 'Yakakent', bagliAdliye: 'Alaçam', acm: 'Bafra' },
+        { ilce: 'Bakırköy', bagliAdliye: 'Bakırköy', acm: 'İstanbul' },
+        { ilce: 'Büyükçekmece', bagliAdliye: 'Büyükçekmece', acm: 'İstanbul' },
+        { ilce: 'Küçükçekmece', bagliAdliye: 'Küçükçekmece', acm: 'İstanbul' },
+        { ilce: 'Avcılar', bagliAdliye: 'Küçükçekmece', acm: 'Bakırköy' },
+        { ilce: 'Bağcılar', bagliAdliye: 'Bakırköy', acm: 'Bakırköy' },
+        { ilce: 'Bahçelievler', bagliAdliye: 'Bakırköy', acm: 'Bakırköy' },
+        { ilce: 'Başakşehir', bagliAdliye: 'Küçükçekmece', acm: 'Bakırköy' },
+        { ilce: 'Beylikdüzü', bagliAdliye: 'Büyükçekmece', acm: 'Bakırköy' },
+        { ilce: 'Esenler', bagliAdliye: 'Bakırköy', acm: 'Bakırköy' },
+        { ilce: 'Esenyurt', bagliAdliye: 'Büyükçekmece', acm: 'Bakırköy' },
+        { ilce: 'Güngören', bagliAdliye: 'Bakırköy', acm: 'Bakırköy' },
+        { ilce: 'Zeytinburnu', bagliAdliye: 'Bakırköy', acm: 'Bakırköy' },
+        { ilce: 'Balıkesir', bagliAdliye: 'Balıkesir', acm: 'Balıkesir' },
+        { ilce: 'Bigadiç', bagliAdliye: 'Bigadiç', acm: 'Balıkesir' },
+        { ilce: 'Dursunbey', bagliAdliye: 'Dursunbey', acm: 'Balıkesir' },
+        { ilce: 'İvrindi', bagliAdliye: 'İvrindi', acm: 'Balıkesir' },
+        { ilce: 'Kepsut', bagliAdliye: 'Kepsut', acm: 'Balıkesir' },
+        { ilce: 'Savaştepe', bagliAdliye: 'Savaştepe', acm: 'Balıkesir' },
+        { ilce: 'Sındırgı', bagliAdliye: 'Sındırgı', acm: 'Balıkesir' },
+        { ilce: 'Susurluk', bagliAdliye: 'Susurluk', acm: 'Balıkesir' },
+        { ilce: 'Altıeylül', bagliAdliye: 'Balıkesir', acm: 'Balıkesir' },
+        { ilce: 'Balya', bagliAdliye: 'İvrindi', acm: 'Balıkesir' },
+        { ilce: 'Karesi', bagliAdliye: 'Balıkesir', acm: 'Balıkesir' },
+        { ilce: 'Bandırma', bagliAdliye: 'Bandırma', acm: 'Balıkesir' },
+        { ilce: 'Erdek', bagliAdliye: 'Erdek', acm: 'Balıkesir' },
+        { ilce: 'Gönen', bagliAdliye: 'Gönen', acm: 'Balıkesir' },
+        { ilce: 'Manyas', bagliAdliye: 'Manyas', acm: 'Balıkesir' },
+        { ilce: 'Marmara', bagliAdliye: 'Marmara', acm: 'Balıkesir' },
+        { ilce: 'Bartın', bagliAdliye: 'Bartın', acm: 'Bartın' },
+        { ilce: 'Amasra', bagliAdliye: 'Amasra', acm: 'Bartın' },
+        { ilce: 'Ulus', bagliAdliye: 'Ulus', acm: 'Bartın' },
+        { ilce: 'Kurucaşile', bagliAdliye: 'Amasra', acm: 'Bartın' },
+        { ilce: 'Batman', bagliAdliye: 'Batman', acm: 'Batman' },
+        { ilce: 'Kozluk', bagliAdliye: 'Kozluk', acm: 'Batman' },
+        { ilce: 'Sason', bagliAdliye: 'Sason', acm: 'Batman' },
+        { ilce: 'Beşiri', bagliAdliye: 'Batman', acm: 'Batman' },
+        { ilce: 'Hasankeyf', bagliAdliye: 'Batman', acm: 'Batman' },
+        { ilce: 'Bayburt', bagliAdliye: 'Bayburt', acm: 'Bayburt' },
+        { ilce: 'Aydıntepe', bagliAdliye: 'Bayburt', acm: 'Bayburt' },
+        { ilce: 'Demirözü', bagliAdliye: 'Bayburt', acm: 'Bayburt' },
+        { ilce: 'Bergama', bagliAdliye: 'Bergama', acm: 'İzmir' },
+        { ilce: 'Dikili', bagliAdliye: 'Dikili', acm: 'İzmir' },
+        { ilce: 'Kınık', bagliAdliye: 'Kınık', acm: 'İzmir' },
+        { ilce: 'Bilecik', bagliAdliye: 'Bilecik', acm: 'Bilecik' },
+        { ilce: 'Bozüyük', bagliAdliye: 'Bozüyük', acm: 'Bilecik' },
+        { ilce: 'Gölpazarı', bagliAdliye: 'Gölpazarı', acm: 'Bilecik' },
+        { ilce: 'Osmaneli', bagliAdliye: 'Osmaneli', acm: 'Bilecik' },
+        { ilce: 'Söğüt', bagliAdliye: 'Söğüt', acm: 'Bilecik' },
+        { ilce: 'İnhisar', bagliAdliye: 'Söğüt', acm: 'Bilecik' },
+        { ilce: 'İnönü', bagliAdliye: 'Bozüyük', acm: 'Bilecik' },
+        { ilce: 'Pazaryeri', bagliAdliye: 'Bozüyük', acm: 'Bilecik' },
+        { ilce: 'Yenipazar (Bilecik)', bagliAdliye: 'Gölpazarı', acm: 'Bilecik' },
+        { ilce: 'Bingöl', bagliAdliye: 'Bingöl', acm: 'Bingöl' },
+        { ilce: 'Genç', bagliAdliye: 'Genç', acm: 'Bingöl' },
+        { ilce: 'Karlıova', bagliAdliye: 'Karlıova', acm: 'Bingöl' },
+        { ilce: 'Kiğı', bagliAdliye: 'Kiğı', acm: 'Bingöl' },
+        { ilce: 'Solhan', bagliAdliye: 'Solhan', acm: 'Bingöl' },
+        { ilce: 'Adaklı', bagliAdliye: 'Kiğı', acm: 'Bingöl' },
+        { ilce: 'Yedisu', bagliAdliye: 'Karlıova', acm: 'Bingöl' },
+        { ilce: 'Bitlis', bagliAdliye: 'Bitlis', acm: 'Bitlis' },
+        { ilce: 'Adilcevaz', bagliAdliye: 'Adilcevaz', acm: 'Bitlis' },
+        { ilce: 'Ahlat', bagliAdliye: 'Ahlat', acm: 'Bitlis' },
+        { ilce: 'Güroymak', bagliAdliye: 'Güroymak', acm: 'Bitlis' },
+        { ilce: 'Hizan', bagliAdliye: 'Hizan', acm: 'Bitlis' },
+        { ilce: 'Mutki', bagliAdliye: 'Mutki', acm: 'Bitlis' },
+        { ilce: 'Tatvan', bagliAdliye: 'Tatvan', acm: 'Bitlis' },
+        { ilce: 'Bodrum', bagliAdliye: 'Bodrum', acm: 'Muğla' },
+        { ilce: 'Milas', bagliAdliye: 'Milas', acm: 'Muğla' },
+        { ilce: 'Boğazlıyan', bagliAdliye: 'Boğazlıyan', acm: 'Yozgat' },
+        { ilce: 'Çayıralan', bagliAdliye: 'Çayıralan', acm: 'Yozgat' },
+        { ilce: 'Sarıkaya', bagliAdliye: 'Sarıkaya', acm: 'Yozgat' },
+        { ilce: 'Çandır', bagliAdliye: 'Çayıralan', acm: 'Boğazlıyan' },
+        { ilce: 'Yenifakılı', bagliAdliye: 'Boğazlıyan', acm: 'Boğazlıyan' },
+        { ilce: 'Bolu', bagliAdliye: 'Bolu', acm: 'Bolu' },
+        { ilce: 'Gerede', bagliAdliye: 'Gerede', acm: 'Bolu' },
+        { ilce: 'Göynük', bagliAdliye: 'Göynük', acm: 'Bolu' },
+        { ilce: 'Mengen', bagliAdliye: 'Mengen', acm: 'Bolu' },
+        { ilce: 'Mudurnu', bagliAdliye: 'Mudurnu', acm: 'Bolu' },
+        { ilce: 'Dörtdivan', bagliAdliye: 'Gerede', acm: 'Bolu' },
+        { ilce: 'Kıbrıscık', bagliAdliye: 'Bolu', acm: 'Bolu' },
+        { ilce: 'Seben', bagliAdliye: 'Bolu', acm: 'Bolu' },
+        { ilce: 'Yeniçağa', bagliAdliye: 'Gerede', acm: 'Bolu' },
+        { ilce: 'Bolvadin', bagliAdliye: 'Bolvadin', acm: 'Afyonkarahisar' },
+        { ilce: 'Çay', bagliAdliye: 'Çay', acm: 'Afyonkarahisar' },
+        { ilce: 'Emirdağ', bagliAdliye: 'Emirdağ', acm: 'Afyonkarahisar' },
+        { ilce: 'Sultandağı', bagliAdliye: 'Çay', acm: 'Bolvadin' },
+        { ilce: 'Boyabat', bagliAdliye: 'Boyabat', acm: 'Sinop' },
+        { ilce: 'Durağan', bagliAdliye: 'Durağan', acm: 'Sinop' },
+        { ilce: 'Saraydüzü', bagliAdliye: 'Boyabat', acm: 'Boyabat' },
+        { ilce: 'Burdur', bagliAdliye: 'Burdur', acm: 'Burdur' },
+        { ilce: 'Bucak', bagliAdliye: 'Bucak', acm: 'Burdur' },
+        { ilce: 'Gölhisar', bagliAdliye: 'Gölhisar', acm: 'Burdur' },
+        { ilce: 'Tefenni', bagliAdliye: 'Tefenni', acm: 'Burdur' },
+        { ilce: 'Yeşilova', bagliAdliye: 'Yeşilova', acm: 'Burdur' },
+        { ilce: 'Ağlasun', bagliAdliye: 'Burdur', acm: 'Burdur' },
+        { ilce: 'Altınyayla (Burdur)', bagliAdliye: 'Gölhisar', acm: 'Burdur' },
+        { ilce: 'Çavdır', bagliAdliye: 'Gölhisar', acm: 'Burdur' },
+        { ilce: 'Çeltikçi', bagliAdliye: 'Bucak', acm: 'Burdur' },
+        { ilce: 'Karamanlı', bagliAdliye: 'Tefenni', acm: 'Burdur' },
+        { ilce: 'Kemer (Burdur)', bagliAdliye: 'Burdur', acm: 'Burdur' },
+        { ilce: 'Burhaniye', bagliAdliye: 'Burhaniye', acm: 'Balıkesir' },
+        { ilce: 'Ayvalık', bagliAdliye: 'Ayvalık', acm: 'Balıkesir' },
+        { ilce: 'Edremit', bagliAdliye: 'Edremit', acm: 'Balıkesir' },
+        { ilce: 'Gömeç', bagliAdliye: 'Burhaniye', acm: 'Burhaniye' },
+        { ilce: 'Havran', bagliAdliye: 'Edremit', acm: 'Burhaniye' },
+        { ilce: 'Bursa', bagliAdliye: 'Bursa', acm: 'Bursa' },
+        { ilce: 'Gemlik', bagliAdliye: 'Gemlik', acm: 'Bursa' },
+        { ilce: 'Karacabey', bagliAdliye: 'Karacabey', acm: 'Bursa' },
+        { ilce: 'Keles', bagliAdliye: 'Keles', acm: 'Bursa' },
+        { ilce: 'Mudanya', bagliAdliye: 'Mudanya', acm: 'Bursa' },
+        { ilce: 'Mustafakemalpaşa', bagliAdliye: 'Mustafakemalpaşa', acm: 'Bursa' },
+        { ilce: 'Orhaneli', bagliAdliye: 'Orhaneli', acm: 'Bursa' },
+        { ilce: 'Orhangazi', bagliAdliye: 'Orhangazi', acm: 'Bursa' },
+        { ilce: 'Armutlu', bagliAdliye: 'Gemlik', acm: 'Bursa' },
+        { ilce: 'Büyükorhan', bagliAdliye: 'Orhaneli', acm: 'Bursa' },
+        { ilce: 'Gürsu', bagliAdliye: 'Bursa', acm: 'Bursa' },
+        { ilce: 'Kestel', bagliAdliye: 'Bursa', acm: 'Bursa' },
+        { ilce: 'Nilüfer', bagliAdliye: 'Bursa', acm: 'Bursa' },
+        { ilce: 'Osmangazi', bagliAdliye: 'Bursa', acm: 'Bursa' },
+        { ilce: 'Yıldırım', bagliAdliye: 'Bursa', acm: 'Bursa' },
+        { ilce: 'Ceyhan', bagliAdliye: 'Ceyhan', acm: 'Adana' },
+        { ilce: 'Yumurtalık', bagliAdliye: 'Yumurtalık', acm: 'Adana' },
+        { ilce: 'Cizre', bagliAdliye: 'Cizre', acm: 'Şırnak' },
+        { ilce: 'Silopi', bagliAdliye: 'Silopi', acm: 'Şırnak' },
+        { ilce: 'Güçlükonak', bagliAdliye: 'Cizre', acm: 'Cizre' },
+        { ilce: 'Çanakkale', bagliAdliye: 'Çanakkale', acm: 'Çanakkale' },
+        { ilce: 'Ayvacık', bagliAdliye: 'Ayvacık', acm: 'Çanakkale' },
+        { ilce: 'Bayramiç', bagliAdliye: 'Bayramiç', acm: 'Çanakkale' },
+        { ilce: 'Biga', bagliAdliye: 'Biga', acm: 'Çanakkale' },
+        { ilce: 'Çan', bagliAdliye: 'Çan', acm: 'Çanakkale' },
+        { ilce: 'Ezine', bagliAdliye: 'Ezine', acm: 'Çanakkale' },
+        { ilce: 'Gelibolu', bagliAdliye: 'Gelibolu', acm: 'Çanakkale' },
+        { ilce: 'Gökçeada', bagliAdliye: 'Gökçeada', acm: 'Çanakkale' },
+        { ilce: 'Lapseki', bagliAdliye: 'Lapseki', acm: 'Çanakkale' },
+        { ilce: 'Yenice (Çanakkale)', bagliAdliye: 'Yenice (Çanakkale)', acm: 'Çanakkale' },
+        { ilce: 'Bozcaada', bagliAdliye: 'Ezine', acm: 'Çanakkale' },
+        { ilce: 'Eceabat', bagliAdliye: 'Çanakkale', acm: 'Çanakkale' },
+        { ilce: 'Çankırı', bagliAdliye: 'Çankırı', acm: 'Çankırı' },
+        { ilce: 'Ilgaz', bagliAdliye: 'Ilgaz', acm: 'Çankırı' },
+        { ilce: 'Kurşunlu', bagliAdliye: 'Kurşunlu', acm: 'Çankırı' },
+        { ilce: 'Şabanözü', bagliAdliye: 'Şabanözü', acm: 'Çankırı' },
+        { ilce: 'Atkaracalar', bagliAdliye: 'Kurşunlu', acm: 'Çankırı' },
+        { ilce: 'Bayramören', bagliAdliye: 'Kurşunlu', acm: 'Çankırı' },
+        { ilce: 'Eldivan', bagliAdliye: 'Çankırı', acm: 'Çankırı' },
+        { ilce: 'Kızılırmak', bagliAdliye: 'Çankırı', acm: 'Çankırı' },
+        { ilce: 'Korgun', bagliAdliye: 'Çankırı', acm: 'Çankırı' },
+        { ilce: 'Orta', bagliAdliye: 'Şabanözü', acm: 'Çankırı' },
+        { ilce: 'Yapraklı', bagliAdliye: 'Çankırı', acm: 'Çankırı' },
+        { ilce: 'Çarşamba', bagliAdliye: 'Çarşamba', acm: 'Samsun' },
+        { ilce: 'Terme', bagliAdliye: 'Terme', acm: 'Samsun' },
+        { ilce: 'Ayvacık (Çarşamba)', bagliAdliye: 'Çarşamba', acm: 'Çarşamba' },
+        { ilce: 'Salıpazarı', bagliAdliye: 'Çarşamba', acm: 'Çarşamba' },
+        { ilce: 'Çorlu', bagliAdliye: 'Çorlu', acm: 'Tekirdağ' },
+        { ilce: 'Çerkezköy', bagliAdliye: 'Çerkezköy', acm: 'Tekirdağ' },
+        { ilce: 'Saray (Çorlu)', bagliAdliye: 'Saray (Çorlu)', acm: 'Tekirdağ' },
+        { ilce: 'Ergene', bagliAdliye: 'Çorlu', acm: 'Çorlu' },
+        { ilce: 'Kapaklı', bagliAdliye: 'Çerkezköy', acm: 'Çorlu' },
+        { ilce: 'Çorum', bagliAdliye: 'Çorum', acm: 'Çorum' },
+        { ilce: 'Bayat', bagliAdliye: 'Bayat', acm: 'Çorum' },
+        { ilce: 'İskilip', bagliAdliye: 'İskilip', acm: 'Çorum' },
+        { ilce: 'Kargı', bagliAdliye: 'Kargı', acm: 'Çorum' },
+        { ilce: 'Osmancık', bagliAdliye: 'Osmancık', acm: 'Çorum' },
+        { ilce: 'Dodurga', bagliAdliye: 'Osmancık', acm: 'Çorum' },
+        { ilce: 'Lâçin', bagliAdliye: 'Osmancık', acm: 'Çorum' },
+        { ilce: 'Mecitözü', bagliAdliye: 'Çorum', acm: 'Çorum' },
+        { ilce: 'Oğuzlar', bagliAdliye: 'Çorum', acm: 'Çorum' },
+        { ilce: 'Ortaköy (Çorum)', bagliAdliye: 'Çorum', acm: 'Çorum' },
+        { ilce: 'Uğurludağ', bagliAdliye: 'İskilip', acm: 'Çorum' },
+        { ilce: 'Denizli', bagliAdliye: 'Denizli', acm: 'Denizli' },
+        { ilce: 'Acıpayam', bagliAdliye: 'Acıpayam', acm: 'Denizli' },
+        { ilce: 'Buldan', bagliAdliye: 'Buldan', acm: 'Denizli' },
+        { ilce: 'Çal', bagliAdliye: 'Çal', acm: 'Denizli' },
+        { ilce: 'Çameli', bagliAdliye: 'Çameli', acm: 'Denizli' },
+        { ilce: 'Çardak', bagliAdliye: 'Çardak', acm: 'Denizli' },
+        { ilce: 'Çivril', bagliAdliye: 'Çivril', acm: 'Denizli' },
+        { ilce: 'Kale', bagliAdliye: 'Kale', acm: 'Denizli' },
+        { ilce: 'Sarayköy', bagliAdliye: 'Sarayköy', acm: 'Denizli' },
+        { ilce: 'Tavas', bagliAdliye: 'Tavas', acm: 'Denizli' },
+        { ilce: 'Akköy', bagliAdliye: 'Denizli', acm: 'Denizli' },
+        { ilce: 'Babadağ', bagliAdliye: 'Sarayköy', acm: 'Denizli' },
+        { ilce: 'Baklan', bagliAdliye: 'Çal', acm: 'Denizli' },
+        { ilce: 'Bekilli', bagliAdliye: 'Çal', acm: 'Denizli' },
+        { ilce: 'Beyağaç', bagliAdliye: 'Kale', acm: 'Denizli' },
+        { ilce: 'Bozkurt (Denizli)', bagliAdliye: 'Çardak', acm: 'Denizli' },
+        { ilce: 'Güney', bagliAdliye: 'Buldan', acm: 'Denizli' },
+        { ilce: 'Honaz', bagliAdliye: 'Denizli', acm: 'Denizli' },
+        { ilce: 'Merkezefendi', bagliAdliye: 'Denizli', acm: 'Denizli' },
+        { ilce: 'Serinhisar', bagliAdliye: 'Acıpayam', acm: 'Denizli' },
+        { ilce: 'Dinar', bagliAdliye: 'Dinar', acm: 'Afyonkarahisar' },
+        { ilce: 'Dazkırı', bagliAdliye: 'Dazkırı', acm: 'Afyonkarahisar' },
+        { ilce: 'Başmakçı', bagliAdliye: 'Dazkırı', acm: 'Dinar' },
+        { ilce: 'Diyarbakır', bagliAdliye: 'Diyarbakır', acm: 'Diyarbakır' },
+        { ilce: 'Bismil', bagliAdliye: 'Bismil', acm: 'Diyarbakır' },
+        { ilce: 'Çermik', bagliAdliye: 'Çermik', acm: 'Diyarbakır' },
+        { ilce: 'Çınar', bagliAdliye: 'Çınar', acm: 'Diyarbakır' },
+        { ilce: 'Çüngüş', bagliAdliye: 'Çüngüş', acm: 'Diyarbakır' },
+        { ilce: 'Dicle', bagliAdliye: 'Dicle', acm: 'Diyarbakır' },
+        { ilce: 'Eğil', bagliAdliye: 'Eğil', acm: 'Diyarbakır' },
+        { ilce: 'Ergani', bagliAdliye: 'Ergani', acm: 'Diyarbakır' },
+        { ilce: 'Hani', bagliAdliye: 'Hani', acm: 'Diyarbakır' },
+        { ilce: 'Hazro', bagliAdliye: 'Hazro', acm: 'Diyarbakır' },
+        { ilce: 'Kulp', bagliAdliye: 'Kulp', acm: 'Diyarbakır' },
+        { ilce: 'Lice', bagliAdliye: 'Lice', acm: 'Diyarbakır' },
+        { ilce: 'Silvan', bagliAdliye: 'Silvan', acm: 'Diyarbakır' },
+        { ilce: 'Bağlar', bagliAdliye: 'Diyarbakır', acm: 'Diyarbakır' },
+        { ilce: 'Kayapınar', bagliAdliye: 'Diyarbakır', acm: 'Diyarbakır' },
+        { ilce: 'Kocaköy', bagliAdliye: 'Diyarbakır', acm: 'Diyarbakır' },
+        { ilce: 'Sur', bagliAdliye: 'Diyarbakır', acm: 'Diyarbakır' },
+        { ilce: 'Yenişehir (Diyarbakır)', bagliAdliye: 'Diyarbakır', acm: 'Diyarbakır' },
+        { ilce: 'Doğubayazıt', bagliAdliye: 'Doğubayazıt', acm: 'Ağrı' },
+        { ilce: 'Diyadin', bagliAdliye: 'Diyadin', acm: 'Ağrı' },
+        { ilce: 'Düzce', bagliAdliye: 'Düzce', acm: 'Düzce' },
+        { ilce: 'Akçakoca', bagliAdliye: 'Akçakoca', acm: 'Düzce' },
+        { ilce: 'Yığılca', bagliAdliye: 'Yığılca', acm: 'Düzce' },
+        { ilce: 'Cumayeri', bagliAdliye: 'Düzce', acm: 'Düzce' },
+        { ilce: 'Çilimli', bagliAdliye: 'Düzce', acm: 'Düzce' },
+        { ilce: 'Gölyaka', bagliAdliye: 'Düzce', acm: 'Düzce' },
+        { ilce: 'Gümüşova', bagliAdliye: 'Düzce', acm: 'Düzce' },
+        { ilce: 'Kaynaşlı', bagliAdliye: 'Düzce', acm: 'Düzce' },
+        { ilce: 'Edirne', bagliAdliye: 'Edirne', acm: 'Edirne' },
+        { ilce: 'Enez', bagliAdliye: 'Enez', acm: 'Edirne' },
+        { ilce: 'İpsala', bagliAdliye: 'İpsala', acm: 'Edirne' },
+        { ilce: 'Keşan', bagliAdliye: 'Keşan', acm: 'Edirne' },
+        { ilce: 'Uzunköprü', bagliAdliye: 'Uzunköprü', acm: 'Edirne' },
+        { ilce: 'Havsa', bagliAdliye: 'Edirne', acm: 'Edirne' },
+        { ilce: 'Lalapaşa', bagliAdliye: 'Edirne', acm: 'Edirne' },
+        { ilce: 'Meriç', bagliAdliye: 'Uzunköprü', acm: 'Edirne' },
+        { ilce: 'Süloğlu', bagliAdliye: 'Edirne', acm: 'Edirne' },
+        { ilce: 'Elazığ', bagliAdliye: 'Elazığ', acm: 'Elazığ' },
+        { ilce: 'Çemişgezek', bagliAdliye: 'Çemişgezek', acm: 'Tunceli' },
+        { ilce: 'Karakoçan', bagliAdliye: 'Karakoçan', acm: 'Elazığ' },
+        { ilce: 'Keban', bagliAdliye: 'Keban', acm: 'Elazığ' },
+        { ilce: 'Kovancılar', bagliAdliye: 'Kovancılar', acm: 'Elazığ' },
+        { ilce: 'Maden', bagliAdliye: 'Maden', acm: 'Elazığ' },
+        { ilce: 'Palu', bagliAdliye: 'Palu', acm: 'Elazığ' },
+        { ilce: 'Ağın', bagliAdliye: 'Keban', acm: 'Elazığ' },
+        { ilce: 'Alacakaya', bagliAdliye: 'Maden', acm: 'Elazığ' },
+        { ilce: 'Arıcak', bagliAdliye: 'Palu', acm: 'Elazığ' },
+        { ilce: 'Baskil', bagliAdliye: 'Elazığ', acm: 'Elazığ' },
+        { ilce: 'Sivrice', bagliAdliye: 'Elazığ', acm: 'Elazığ' },
+        { ilce: 'Yayladere', bagliAdliye: 'Karakoçan', acm: 'Elazığ' },
+        { ilce: 'Elbistan', bagliAdliye: 'Elbistan', acm: 'Kahramanmaraş' },
+        { ilce: 'Afşin', bagliAdliye: 'Afşin', acm: 'Kahramanmaraş' },
+        { ilce: 'Göksun', bagliAdliye: 'Göksun', acm: 'Kahramanmaraş' },
+        { ilce: 'Ekinözü', bagliAdliye: 'Elbistan', acm: 'Elbistan' },
+        { ilce: 'Nurhak', bagliAdliye: 'Elbistan', acm: 'Elbistan' },
+        { ilce: 'Elmalı', bagliAdliye: 'Elmalı', acm: 'Antalya' },
+        { ilce: 'Demre', bagliAdliye: 'Demre', acm: 'Antalya' },
+        { ilce: 'Finike', bagliAdliye: 'Finike', acm: 'Antalya' },
+        { ilce: 'Kaş', bagliAdliye: 'Kaş', acm: 'Antalya' },
+        { ilce: 'Kumluca', bagliAdliye: 'Kumluca', acm: 'Antalya' },
+        { ilce: 'Erciş', bagliAdliye: 'Erciş', acm: 'Van' },
+        { ilce: 'Çaldıran', bagliAdliye: 'Çaldıran', acm: 'Van' },
+        { ilce: 'Muradiye', bagliAdliye: 'Muradiye', acm: 'Van' },
+        { ilce: 'Ereğli (Konya)', bagliAdliye: 'Ereğli (Konya)', acm: 'Konya' },
+        { ilce: 'Karapınar', bagliAdliye: 'Karapınar', acm: 'Konya' },
+        { ilce: 'Emirgazi', bagliAdliye: 'Karapınar', acm: 'Ereğli (Konya)' },
+        { ilce: 'Halkapınar', bagliAdliye: 'Ereğli (Konya)', acm: 'Ereğli (Konya)' },
+        { ilce: 'Ermenek', bagliAdliye: 'Ermenek', acm: 'Karaman' },
+        { ilce: 'Sarıveliler', bagliAdliye: 'Sarıveliler', acm: 'Karaman' },
+        { ilce: 'Başyayla', bagliAdliye: 'Ermenek', acm: 'Ermenek' },
+        { ilce: 'Erzincan', bagliAdliye: 'Erzincan', acm: 'Erzincan' },
+        { ilce: 'Çayırlı', bagliAdliye: 'Çayırlı', acm: 'Erzincan' },
+        { ilce: 'Iliç', bagliAdliye: 'Iliç', acm: 'Erzincan' },
+        { ilce: 'Kemah', bagliAdliye: 'Kemah', acm: 'Erzincan' },
+        { ilce: 'Kemaliye', bagliAdliye: 'Kemaliye', acm: 'Erzincan' },
+        { ilce: 'Refahiye', bagliAdliye: 'Refahiye', acm: 'Erzincan' },
+        { ilce: 'Tercan', bagliAdliye: 'Tercan', acm: 'Erzincan' },
+        { ilce: 'Otlukbeli', bagliAdliye: 'Çayırlı', acm: 'Erzincan' },
+        { ilce: 'Üzümlü', bagliAdliye: 'Erzincan', acm: 'Erzincan' },
+        { ilce: 'Erzurum', bagliAdliye: 'Erzurum', acm: 'Erzurum' },
+        { ilce: 'Aşkale', bagliAdliye: 'Aşkale', acm: 'Erzurum' },
+        { ilce: 'Çat', bagliAdliye: 'Çat', acm: 'Erzurum' },
+        { ilce: 'Horasan', bagliAdliye: 'Horasan', acm: 'Erzurum' },
+        { ilce: 'İspir', bagliAdliye: 'İspir', acm: 'Erzurum' },
+        { ilce: 'Karayazı', bagliAdliye: 'Karayazı', acm: 'Erzurum' },
+        { ilce: 'Pasinler', bagliAdliye: 'Pasinler', acm: 'Erzurum' },
+        { ilce: 'Tortum', bagliAdliye: 'Tortum', acm: 'Erzurum' },
+        { ilce: 'Aziziye', bagliAdliye: 'Erzurum', acm: 'Erzurum' },
+        { ilce: 'Köprüköy', bagliAdliye: 'Pasinler', acm: 'Erzurum' },
+        { ilce: 'Palandöken', bagliAdliye: 'Erzurum', acm: 'Erzurum' },
+        { ilce: 'Pazaryolu', bagliAdliye: 'İspir', acm: 'Erzurum' },
+        { ilce: 'Uzundere', bagliAdliye: 'Tortum', acm: 'Erzurum' },
+        { ilce: 'Yakutiye', bagliAdliye: 'Erzurum', acm: 'Erzurum' },
+        { ilce: 'Eskişehir', bagliAdliye: 'Eskişehir', acm: 'Eskişehir' },
+        { ilce: 'Beylikova', bagliAdliye: 'Beylikova', acm: 'Eskişehir' },
+        { ilce: 'Çifteler', bagliAdliye: 'Çifteler', acm: 'Eskişehir' },
+        { ilce: 'Mihalıççık', bagliAdliye: 'Mihalıççık', acm: 'Eskişehir' },
+        { ilce: 'Sivrihisar', bagliAdliye: 'Sivrihisar', acm: 'Eskişehir' },
+        { ilce: 'Alpu', bagliAdliye: 'Beylikova', acm: 'Eskişehir' },
+        { ilce: 'Günyüzü', bagliAdliye: 'Sivrihisar', acm: 'Eskişehir' },
+        { ilce: 'Han', bagliAdliye: 'Çifteler', acm: 'Eskişehir' },
+        { ilce: 'Mahmudiye', bagliAdliye: 'Çifteler', acm: 'Eskişehir' },
+        { ilce: 'Mihalgazi', bagliAdliye: 'Eskişehir', acm: 'Eskişehir' },
+        { ilce: 'Odunpazarı', bagliAdliye: 'Eskişehir', acm: 'Eskişehir' },
+        { ilce: 'Sarıcakaya', bagliAdliye: 'Mihalgazi', acm: 'Eskişehir' },
+        { ilce: 'Seyitgazi', bagliAdliye: 'Eskişehir', acm: 'Eskişehir' },
+        { ilce: 'Tepebaşı', bagliAdliye: 'Eskişehir', acm: 'Eskişehir' },
+        { ilce: 'Fethiye', bagliAdliye: 'Fethiye', acm: 'Muğla' },
+        { ilce: 'Ortaca', bagliAdliye: 'Ortaca', acm: 'Muğla' },
+        { ilce: 'Dalaman', bagliAdliye: 'Ortaca', acm: 'Fethiye' },
+        { ilce: 'Seydikemer', bagliAdliye: 'Fethiye', acm: 'Fethiye' },
+        { ilce: 'Gaziantep', bagliAdliye: 'Gaziantep', acm: 'Gaziantep' },
+        { ilce: 'Araban', bagliAdliye: 'Araban', acm: 'Gaziantep' },
+        { ilce: 'Nurdağı', bagliAdliye: 'Nurdağı', acm: 'Gaziantep' },
+        { ilce: 'Oğuzeli', bagliAdliye: 'Gaziantep', acm: 'Gaziantep' },
+        { ilce: 'Şahinbey', bagliAdliye: 'Gaziantep', acm: 'Gaziantep' },
+        { ilce: 'Şehitkamil', bagliAdliye: 'Gaziantep', acm: 'Gaziantep' },
+        { ilce: 'Yavuzeli', bagliAdliye: 'Gaziantep', acm: 'Gaziantep' },
+        { ilce: 'Gebze', bagliAdliye: 'Gebze', acm: 'Kocaeli' },
+        { ilce: 'Çayırova', bagliAdliye: 'Gebze', acm: 'Gebze' },
+        { ilce: 'Darıca', bagliAdliye: 'Gebze', acm: 'Gebze' },
+        { ilce: 'Dilovası', bagliAdliye: 'Gebze', acm: 'Gebze' },
+        { ilce: 'Giresun', bagliAdliye: 'Giresun', acm: 'Giresun' },
+        { ilce: 'Bulancak', bagliAdliye: 'Bulancak', acm: 'Giresun' },
+        { ilce: 'Dereli', bagliAdliye: 'Dereli', acm: 'Giresun' },
+        { ilce: 'Espiye', bagliAdliye: 'Espiye', acm: 'Giresun' },
+        { ilce: 'Görele', bagliAdliye: 'Görele', acm: 'Giresun' },
+        { ilce: 'Tirebolu', bagliAdliye: 'Tirebolu', acm: 'Giresun' },
+        { ilce: 'Çanakçı', bagliAdliye: 'Görele', acm: 'Giresun' },
+        { ilce: 'Doğankent', bagliAdliye: 'Tirebolu', acm: 'Giresun' },
+        { ilce: 'Eynesil', bagliAdliye: 'Görele', acm: 'Giresun' },
+        { ilce: 'Güce', bagliAdliye: 'Tirebolu', acm: 'Giresun' },
+        { ilce: 'Keşap', bagliAdliye: 'Giresun', acm: 'Giresun' },
+        { ilce: 'Piraziz', bagliAdliye: 'Bulancak', acm: 'Giresun' },
+        { ilce: 'Yağlıdere', bagliAdliye: 'Espiye', acm: 'Giresun' },
+        { ilce: 'Gümüşhane', bagliAdliye: 'Gümüşhane', acm: 'Gümüşhane' },
+        { ilce: 'Kelkit', bagliAdliye: 'Kelkit', acm: 'Gümüşhane' },
+        { ilce: 'Şiran', bagliAdliye: 'Şiran', acm: 'Gümüşhane' },
+        { ilce: 'Torul', bagliAdliye: 'Torul', acm: 'Gümüşhane' },
+        { ilce: 'Köse', bagliAdliye: 'Kelkit', acm: 'Gümüşhane' },
+        { ilce: 'Kürtün', bagliAdliye: 'Torul', acm: 'Gümüşhane' },
+        { ilce: 'Hakkâri', bagliAdliye: 'Hakkâri', acm: 'Hakkâri' },
+        { ilce: 'Çukurca', bagliAdliye: 'Çukurca', acm: 'Hakkâri' },
+        { ilce: 'Hatay', bagliAdliye: 'Hatay', acm: 'Hatay' },
+        { ilce: 'Altınözü', bagliAdliye: 'Altınözü', acm: 'Hatay' },
+        { ilce: 'Samandağ', bagliAdliye: 'Samandağ', acm: 'Hatay' },
+        { ilce: 'Yayladağı', bagliAdliye: 'Yayladağı', acm: 'Hatay' },
+        { ilce: 'Antakya', bagliAdliye: 'Hatay', acm: 'Hatay' },
+        { ilce: 'Defne', bagliAdliye: 'Hatay', acm: 'Hatay' },
+        { ilce: 'Kumlu', bagliAdliye: 'Reyhanlı', acm: 'Hatay' },
+        { ilce: 'Hınıs', bagliAdliye: 'Hınıs', acm: 'Erzurum' },
+        { ilce: 'Tekman', bagliAdliye: 'Tekman', acm: 'Erzurum' },
+        { ilce: 'Karaçoban', bagliAdliye: 'Hınıs', acm: 'Hınıs' },
+        { ilce: 'Iğdır', bagliAdliye: 'Iğdır', acm: 'Iğdır' },
+        { ilce: 'Aralık', bagliAdliye: 'Aralık', acm: 'Iğdır' },
+        { ilce: 'Tuzluca', bagliAdliye: 'Tuzluca', acm: 'Iğdır' },
+        { ilce: 'Karakoyunlu', bagliAdliye: 'Iğdır', acm: 'Iğdır' },
+        { ilce: 'Isparta', bagliAdliye: 'Isparta', acm: 'Isparta' },
+        { ilce: 'Eğirdir', bagliAdliye: 'Eğirdir', acm: 'Isparta' },
+        { ilce: 'Keçiborlu', bagliAdliye: 'Keçiborlu', acm: 'Isparta' },
+        { ilce: 'Senirkent', bagliAdliye: 'Senirkent', acm: 'Isparta' },
+        { ilce: 'Sütçüler', bagliAdliye: 'Sütçüler', acm: 'Isparta' },
+        { ilce: 'Aksu', bagliAdliye: 'Eğirdir', acm: 'Isparta' },
+        { ilce: 'Atabey', bagliAdliye: 'Isparta', acm: 'Isparta' },
+        { ilce: 'Gönen (Isparta)', bagliAdliye: 'Isparta', acm: 'Isparta' },
+        { ilce: 'Uluborlu', bagliAdliye: 'Keçiborlu', acm: 'Isparta' },
+        { ilce: 'İnebolu', bagliAdliye: 'İnebolu', acm: 'Kastamonu' },
+        { ilce: 'Cide', bagliAdliye: 'Cide', acm: 'Kastamonu' },
+        { ilce: 'Küre', bagliAdliye: 'Küre', acm: 'Kastamonu' },
+        { ilce: 'Abana', bagliAdliye: 'İnebolu', acm: 'İnebolu' },
+        { ilce: 'Ağlı', bagliAdliye: 'Küre', acm: 'İnebolu' },
+        { ilce: 'Bozkurt (İnebolu)', bagliAdliye: 'İnebolu', acm: 'İnebolu' },
+        { ilce: 'Çatalzeytin', bagliAdliye: 'İnebolu', acm: 'İnebolu' },
+        { ilce: 'Doğanyurt', bagliAdliye: 'İnebolu', acm: 'İnebolu' },
+        { ilce: 'Şenpazar', bagliAdliye: 'Cide', acm: 'İnebolu' },
+        { ilce: 'İnegöl', bagliAdliye: 'İnegöl', acm: 'Bursa' },
+        { ilce: 'İznik', bagliAdliye: 'İznik', acm: 'Bursa' },
+        { ilce: 'Yenişehir', bagliAdliye: 'Yenişehir', acm: 'Bursa' },
+        { ilce: 'İskenderun', bagliAdliye: 'İskenderun', acm: 'Hatay' },
+        { ilce: 'Dörtyol', bagliAdliye: 'Dörtyol', acm: 'Hatay' },
+        { ilce: 'Erzin', bagliAdliye: 'Erzin', acm: 'Hatay' },
+        { ilce: 'Arsuz', bagliAdliye: 'İskenderun', acm: 'İskenderun' },
+        { ilce: 'Belen', bagliAdliye: 'İskenderun', acm: 'İskenderun' },
+        { ilce: 'Payas', bagliAdliye: 'Dörtyol', acm: 'İskenderun' },
+        { ilce: 'İstanbul', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Gaziosmanpaşa', bagliAdliye: 'Gaziosmanpaşa', acm: 'İstanbul' },
+        { ilce: 'Arnavutköy', bagliAdliye: 'Gaziosmanpaşa', acm: 'İstanbul' },
+        { ilce: 'Bayrampaşa', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Beşiktaş', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Beyoğlu', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Eyüp', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Fatih', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Kağıthane', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Sarıyer', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'Sultangazi', bagliAdliye: 'Gaziosmanpaşa', acm: 'İstanbul' },
+        { ilce: 'Şişli', bagliAdliye: 'İstanbul', acm: 'İstanbul' },
+        { ilce: 'İstanbul Anadolu', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Adalar', bagliAdliye: 'Adalar', acm: 'İstanbul' },
+        { ilce: 'Beykoz', bagliAdliye: 'Beykoz', acm: 'İstanbul' },
+        { ilce: 'Şile', bagliAdliye: 'Şile', acm: 'İstanbul' },
+        { ilce: 'Ataşehir', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul Anadolu' },
+        { ilce: 'Çekmeköy', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Kadıköy', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Kartal', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Maltepe', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Pendik', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Sancaktepe', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Sultanbeyli', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Tuzla', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Ümraniye', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'Üsküdar', bagliAdliye: 'İstanbul Anadolu', acm: 'İstanbul' },
+        { ilce: 'İzmir', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Çeşme', bagliAdliye: 'Çeşme', acm: 'İzmir' },
+        { ilce: 'Karaburun', bagliAdliye: 'Karaburun', acm: 'İzmir' },
+        { ilce: 'Kemalpaşa', bagliAdliye: 'Kemalpaşa', acm: 'İzmir' },
+        { ilce: 'Menderes', bagliAdliye: 'Menderes', acm: 'İzmir' },
+        { ilce: 'Seferihisar', bagliAdliye: 'Seferihisar', acm: 'İzmir' },
+        { ilce: 'Selçuk', bagliAdliye: 'Selçuk', acm: 'İzmir' },
+        { ilce: 'Torbalı', bagliAdliye: 'Torbalı', acm: 'İzmir' },
+        { ilce: 'Urla', bagliAdliye: 'Urla', acm: 'İzmir' },
+        { ilce: 'Balçova', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Bayraklı', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Bornova', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Buca', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Gaziemir', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Güzelbahçe', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Karabağlar', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Konak', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Narlıdere', bagliAdliye: 'İzmir', acm: 'İzmir' },
+        { ilce: 'Kahramanmaraş', bagliAdliye: 'Kahramanmaraş', acm: 'Kahramanmaraş' },
+        { ilce: 'Andırın', bagliAdliye: 'Andırın', acm: 'Kahramanmaraş' },
+        { ilce: 'Pazarcık', bagliAdliye: 'Pazarcık', acm: 'Kahramanmaraş' },
+        { ilce: 'Türkoğlu', bagliAdliye: 'Türkoğlu', acm: 'Kahramanmaraş' },
+        { ilce: 'Çağlıyancerit', bagliAdliye: 'Pazarcık', acm: 'Kahramanmaraş' },
+        { ilce: 'Dulkadiroğlu', bagliAdliye: 'Kahramanmaraş', acm: 'Kahramanmaraş' },
+        { ilce: 'Onikişubat', bagliAdliye: 'Kahramanmaraş', acm: 'Kahramanmaraş' },
+        { ilce: 'Karabük', bagliAdliye: 'Karabük', acm: 'Karabük' },
+        { ilce: 'Çerkeş', bagliAdliye: 'Çerkeş', acm: 'Çankırı' },
+        { ilce: 'Eskipazar', bagliAdliye: 'Eskipazar', acm: 'Karabük' },
+        { ilce: 'Safranbolu', bagliAdliye: 'Safranbolu', acm: 'Karabük' },
+        { ilce: 'Yenice (Karabük)', bagliAdliye: 'Yenice (Karabük)', acm: 'Karabük' },
+        { ilce: 'Eflani', bagliAdliye: 'Safranbolu', acm: 'Karabük' },
+        { ilce: 'Ovacık (Karabük)', bagliAdliye: 'Karabük', acm: 'Karabük' },
+        { ilce: 'Karaman', bagliAdliye: 'Karaman', acm: 'Karaman' },
+        { ilce: 'Ayrancı', bagliAdliye: 'Karaman', acm: 'Karaman' },
+        { ilce: 'Kazımkarabekir', bagliAdliye: 'Karaman', acm: 'Karaman' },
+        { ilce: 'Kars', bagliAdliye: 'Kars', acm: 'Kars' },
+        { ilce: 'Arpaçay', bagliAdliye: 'Arpaçay', acm: 'Kars' },
+        { ilce: 'Digor', bagliAdliye: 'Digor', acm: 'Kars' },
+        { ilce: 'Kağızman', bagliAdliye: 'Kağızman', acm: 'Kars' },
+        { ilce: 'Sarıkamış', bagliAdliye: 'Sarıkamış', acm: 'Kars' },
+        { ilce: 'Selim', bagliAdliye: 'Selim', acm: 'Kars' },
+        { ilce: 'Akyaka', bagliAdliye: 'Kars', acm: 'Kars' },
+        { ilce: 'Susuz', bagliAdliye: 'Kars', acm: 'Kars' },
+        { ilce: 'Karşıyaka', bagliAdliye: 'Karşıyaka', acm: 'İzmir' },
+        { ilce: 'Aliağa', bagliAdliye: 'Aliağa', acm: 'İzmir' },
+        { ilce: 'Foça', bagliAdliye: 'Foça', acm: 'İzmir' },
+        { ilce: 'Menemen', bagliAdliye: 'Menemen', acm: 'İzmir' },
+        { ilce: 'Çiğli', bagliAdliye: 'Karşıyaka', acm: 'Karşıyaka' },
+        { ilce: 'Kastamonu', bagliAdliye: 'Kastamonu', acm: 'Kastamonu' },
+        { ilce: 'Araç', bagliAdliye: 'Araç', acm: 'Kastamonu' },
+        { ilce: 'Azdavay', bagliAdliye: 'Azdavay', acm: 'Kastamonu' },
+        { ilce: 'Devrekâni', bagliAdliye: 'Devrekâni', acm: 'Kastamonu' },
+        { ilce: 'Taşköprü', bagliAdliye: 'Taşköprü', acm: 'Kastamonu' },
+        { ilce: 'Tosya', bagliAdliye: 'Tosya', acm: 'Kastamonu' },
+        { ilce: 'Daday', bagliAdliye: 'Kastamonu', acm: 'Kastamonu' },
+        { ilce: 'Hanönü', bagliAdliye: 'Taşköprü', acm: 'Kastamonu' },
+        { ilce: 'İhsangazi', bagliAdliye: 'Kastamonu', acm: 'Kastamonu' },
+        { ilce: 'Pınarbaşı (Kastamonu)', bagliAdliye: 'Azdavay', acm: 'Kastamonu' },
+        { ilce: 'Seydiler', bagliAdliye: 'Devrekâni', acm: 'Kastamonu' },
+        { ilce: 'Kayseri', bagliAdliye: 'Kayseri', acm: 'Kayseri' },
+        { ilce: 'Bünyan', bagliAdliye: 'Bünyan', acm: 'Kayseri' },
+        { ilce: 'Develi', bagliAdliye: 'Develi', acm: 'Kayseri' },
+        { ilce: 'İncesu', bagliAdliye: 'İncesu', acm: 'Kayseri' },
+        { ilce: 'Pınarbaşı', bagliAdliye: 'Pınarbaşı', acm: 'Kayseri' },
+        { ilce: 'Sarıoğlan', bagliAdliye: 'Sarıoğlan', acm: 'Kayseri' },
+        { ilce: 'Sarız', bagliAdliye: 'Sarız', acm: 'Kayseri' },
+        { ilce: 'Tomarza', bagliAdliye: 'Tomarza', acm: 'Kayseri' },
+        { ilce: 'Yahyalı', bagliAdliye: 'Yahyalı', acm: 'Kayseri' },
+        { ilce: 'Yeşilhisar', bagliAdliye: 'Yeşilhisar', acm: 'Kayseri' },
+        { ilce: 'Akkışla', bagliAdliye: 'Sarıoğlan', acm: 'Kayseri' },
+        { ilce: 'Felâhiye', bagliAdliye: 'Kayseri', acm: 'Kayseri' },
+        { ilce: 'Hacılar', bagliAdliye: 'Kayseri', acm: 'Kayseri' },
+        { ilce: 'Kocasinan', bagliAdliye: 'Kayseri', acm: 'Kayseri' },
+        { ilce: 'Melikgazi', bagliAdliye: 'Kayseri', acm: 'Kayseri' },
+        { ilce: 'Özvatan', bagliAdliye: 'Felâhiye', acm: 'Kayseri' },
+        { ilce: 'Talas', bagliAdliye: 'Kayseri', acm: 'Kayseri' },
+        { ilce: 'Kırıkhan', bagliAdliye: 'Kırıkhan', acm: 'Hatay' },
+        { ilce: 'Hassa', bagliAdliye: 'Hassa', acm: 'Hatay' },
+        { ilce: 'Reyhanlı', bagliAdliye: 'Reyhanlı', acm: 'Hatay' },
+        { ilce: 'Kırıkkale', bagliAdliye: 'Kırıkkale', acm: 'Kırıkkale' },
+        { ilce: 'Delice', bagliAdliye: 'Delice', acm: 'Kırıkkale' },
+        { ilce: 'Keskin', bagliAdliye: 'Keskin', acm: 'Kırıkkale' },
+        { ilce: 'Sulakyurt', bagliAdliye: 'Sulakyurt', acm: 'Kırıkkale' },
+        { ilce: 'Bahşili', bagliAdliye: 'Kırıkkale', acm: 'Kırıkkale' },
+        { ilce: 'Balışeyh', bagliAdliye: 'Kırıkkale', acm: 'Kırıkkale' },
+        { ilce: 'Çelebi', bagliAdliye: 'Keskin', acm: 'Kırıkkale' },
+        { ilce: 'Karakeçili', bagliAdliye: 'Kırıkkale', acm: 'Kırıkkale' },
+        { ilce: 'Yahşihan', bagliAdliye: 'Kırıkkale', acm: 'Kırıkkale' },
+        { ilce: 'Kırklareli', bagliAdliye: 'Kırklareli', acm: 'Kırklareli' },
+        { ilce: 'Babaeski', bagliAdliye: 'Babaeski', acm: 'Kırklareli' },
+        { ilce: 'Demirköy', bagliAdliye: 'Demirköy', acm: 'Kırklareli' },
+        { ilce: 'Lüleburgaz', bagliAdliye: 'Lüleburgaz', acm: 'Kırklareli' },
+        { ilce: 'Pınarhisar', bagliAdliye: 'Pınarhisar', acm: 'Kırklareli' },
+        { ilce: 'Vize', bagliAdliye: 'Vize', acm: 'Kırklareli' },
+        { ilce: 'Kofçaz', bagliAdliye: 'Kırklareli', acm: 'Kırklareli' },
+        { ilce: 'Pehlivanköy', bagliAdliye: 'Babaeski', acm: 'Kırklareli' },
+        { ilce: 'Kırşehir', bagliAdliye: 'Kırşehir', acm: 'Kırşehir' },
+        { ilce: 'Kaman', bagliAdliye: 'Kaman', acm: 'Kırşehir' },
+        { ilce: 'Mucur', bagliAdliye: 'Mucur', acm: 'Kırşehir' },
+        { ilce: 'Akpınar', bagliAdliye: 'Kırşehir', acm: 'Kırşehir' },
+        { ilce: 'Boztepe', bagliAdliye: 'Kırşehir', acm: 'Kırşehir' },
+        { ilce: 'Kilis', bagliAdliye: 'Kilis', acm: 'Kilis' },
+        { ilce: 'İslahiye', bagliAdliye: 'İslahiye', acm: 'Gaziantep' },
+        { ilce: 'Elbeyli', bagliAdliye: 'Kilis', acm: 'Kilis' },
+        { ilce: 'Musabeyli', bagliAdliye: 'Kilis', acm: 'Kilis' },
+        { ilce: 'Polateli', bagliAdliye: 'Kilis', acm: 'Kilis' },
+        { ilce: 'Kocaeli', bagliAdliye: 'Kocaeli', acm: 'Kocaeli' },
+        { ilce: 'Gölcük', bagliAdliye: 'Gölcük', acm: 'Kocaeli' },
+        { ilce: 'Kandıra', bagliAdliye: 'Kandıra', acm: 'Kocaeli' },
+        { ilce: 'Karamürsel', bagliAdliye: 'Karamürsel', acm: 'Kocaeli' },
+        { ilce: 'Körfez', bagliAdliye: 'Körfez', acm: 'Kocaeli' },
+        { ilce: 'Başiskele', bagliAdliye: 'Kocaeli', acm: 'Kocaeli' },
+        { ilce: 'Derince', bagliAdliye: 'Kocaeli', acm: 'Kocaeli' },
+        { ilce: 'İzmit', bagliAdliye: 'Kocaeli', acm: 'Kocaeli' },
+        { ilce: 'Kartepe', bagliAdliye: 'Kocaeli', acm: 'Kocaeli' },
+        { ilce: 'Konya', bagliAdliye: 'Konya', acm: 'Konya' },
+        { ilce: 'Cihanbeyli', bagliAdliye: 'Cihanbeyli', acm: 'Konya' },
+        { ilce: 'Çumra', bagliAdliye: 'Çumra', acm: 'Konya' },
+        { ilce: 'Hadim', bagliAdliye: 'Hadim', acm: 'Konya' },
+        { ilce: 'Kadınhanı', bagliAdliye: 'Kadınhanı', acm: 'Konya' },
+        { ilce: 'Kulu', bagliAdliye: 'Kulu', acm: 'Konya' },
+        { ilce: 'Sarayönü', bagliAdliye: 'Sarayönü', acm: 'Konya' },
+        { ilce: 'Akören', bagliAdliye: 'Konya', acm: 'Konya' },
+        { ilce: 'Altınekin', bagliAdliye: 'Konya', acm: 'Konya' },
+        { ilce: 'Derbent', bagliAdliye: 'Konya', acm: 'Konya' },
+        { ilce: 'Güneysınır', bagliAdliye: 'Çumra', acm: 'Konya' },
+        { ilce: 'Karatay', bagliAdliye: 'Konya', acm: 'Konya' },
+        { ilce: 'Meram', bagliAdliye: 'Konya', acm: 'Konya' },
+        { ilce: 'Selçuklu', bagliAdliye: 'Konya', acm: 'Konya' },
+        { ilce: 'Taşkent', bagliAdliye: 'Hadim', acm: 'Konya' },
+        { ilce: 'Kozan', bagliAdliye: 'Kozan', acm: 'Adana' },
+        { ilce: 'Aladağ', bagliAdliye: 'Aladağ', acm: 'Adana' },
+        { ilce: 'Feke', bagliAdliye: 'Feke', acm: 'Adana' },
+        { ilce: 'İmamoğlu', bagliAdliye: 'İmamoğlu', acm: 'Adana' },
+        { ilce: 'Tufanbeyli', bagliAdliye: 'Tufanbeyli', acm: 'Adana' },
+        { ilce: 'Saimbeyli', bagliAdliye: 'Feke', acm: 'Kozan' },
+        { ilce: 'Kütahya', bagliAdliye: 'Kütahya', acm: 'Kütahya' },
+        { ilce: 'Altıntaş', bagliAdliye: 'Altıntaş', acm: 'Kütahya' },
+        { ilce: 'Gediz', bagliAdliye: 'Gediz', acm: 'Kütahya' },
+        { ilce: 'Aslanapa', bagliAdliye: 'Kütahya', acm: 'Kütahya' },
+        { ilce: 'Çavdarhisar', bagliAdliye: 'Gediz', acm: 'Kütahya' },
+        { ilce: 'Dumlupınar', bagliAdliye: 'Altıntaş', acm: 'Kütahya' },
+        { ilce: 'Şaphane', bagliAdliye: 'Gediz', acm: 'Kütahya' },
+        { ilce: 'Malatya', bagliAdliye: 'Malatya', acm: 'Malatya' },
+        { ilce: 'Akçadağ', bagliAdliye: 'Akçadağ', acm: 'Malatya' },
+        { ilce: 'Arapgir', bagliAdliye: 'Arapgir', acm: 'Malatya' },
+        { ilce: 'Darende', bagliAdliye: 'Darende', acm: 'Malatya' },
+        { ilce: 'Doğanşehir', bagliAdliye: 'Doğanşehir', acm: 'Malatya' },
+        { ilce: 'Hekimhan', bagliAdliye: 'Hekimhan', acm: 'Malatya' },
+        { ilce: 'Pütürge', bagliAdliye: 'Pütürge', acm: 'Malatya' },
+        { ilce: 'Arguvan', bagliAdliye: 'Malatya', acm: 'Malatya' },
+        { ilce: 'Battalgazi', bagliAdliye: 'Malatya', acm: 'Malatya' },
+        { ilce: 'Doğanyol', bagliAdliye: 'Pütürge', acm: 'Malatya' },
+        { ilce: 'Kale (Malatya)', bagliAdliye: 'Malatya', acm: 'Malatya' },
+        { ilce: 'Kuluncak', bagliAdliye: 'Hekimhan', acm: 'Malatya' },
+        { ilce: 'Yazıhan', bagliAdliye: 'Malatya', acm: 'Malatya' },
+        { ilce: 'Yeşilyurt (Malatya)', bagliAdliye: 'Malatya', acm: 'Malatya' },
+        { ilce: 'Manavgat', bagliAdliye: 'Manavgat', acm: 'Antalya' },
+        { ilce: 'Akseki', bagliAdliye: 'Akseki', acm: 'Antalya' },
+        { ilce: 'Gündoğmuş', bagliAdliye: 'Gündoğmuş', acm: 'Antalya' },
+        { ilce: 'Serik', bagliAdliye: 'Serik', acm: 'Antalya' },
+        { ilce: 'İbradı', bagliAdliye: 'Akseki', acm: 'Manavgat' },
+        { ilce: 'Manisa', bagliAdliye: 'Manisa', acm: 'Manisa' },
+        { ilce: 'Saruhanlı', bagliAdliye: 'Saruhanlı', acm: 'Manisa' },
+        { ilce: 'Ahmetli', bagliAdliye: 'Turgutlu', acm: 'Manisa' },
+        { ilce: 'Şehzadeler', bagliAdliye: 'Manisa', acm: 'Manisa' },
+        { ilce: 'Yunusemre', bagliAdliye: 'Manisa', acm: 'Manisa' },
+        { ilce: 'Mardin', bagliAdliye: 'Mardin', acm: 'Mardin' },
+        { ilce: 'Derik', bagliAdliye: 'Derik', acm: 'Mardin' },
+        { ilce: 'Kızıltepe', bagliAdliye: 'Kızıltepe', acm: 'Mardin' },
+        { ilce: 'Mazıdağı', bagliAdliye: 'Mazıdağı', acm: 'Mardin' },
+        { ilce: 'Nusaybin', bagliAdliye: 'Nusaybin', acm: 'Mardin' },
+        { ilce: 'Ömerli', bagliAdliye: 'Ömerli', acm: 'Mardin' },
+        { ilce: 'Savur', bagliAdliye: 'Savur', acm: 'Mardin' },
+        { ilce: 'Artuklu', bagliAdliye: 'Mardin', acm: 'Mardin' },
+        { ilce: 'Yeşilli', bagliAdliye: 'Mardin', acm: 'Mardin' },
+        { ilce: 'Mersin', bagliAdliye: 'Mersin', acm: 'Mersin' },
+        { ilce: 'Erdemli', bagliAdliye: 'Erdemli', acm: 'Mersin' },
+        { ilce: 'Akdeniz', bagliAdliye: 'Mersin', acm: 'Mersin' },
+        { ilce: 'Mezitli', bagliAdliye: 'Mersin', acm: 'Mersin' },
+        { ilce: 'Toroslar', bagliAdliye: 'Mersin', acm: 'Mersin' },
+        { ilce: 'Yenişehir (Mersin)', bagliAdliye: 'Mersin', acm: 'Mersin' },
+        { ilce: 'Midyat', bagliAdliye: 'Midyat', acm: 'Mardin' },
+        { ilce: 'Dargeçit', bagliAdliye: 'Dargeçit', acm: 'Mardin' },
+        { ilce: 'Gercüş', bagliAdliye: 'Gercüş', acm: 'Batman' },
+        { ilce: 'İdil', bagliAdliye: 'İdil', acm: 'Şırnak' },
+        { ilce: 'Muğla', bagliAdliye: 'Muğla', acm: 'Muğla' },
+        { ilce: 'Datça', bagliAdliye: 'Datça', acm: 'Muğla' },
+        { ilce: 'Köyceğiz', bagliAdliye: 'Köyceğiz', acm: 'Muğla' },
+        { ilce: 'Marmaris', bagliAdliye: 'Marmaris', acm: 'Muğla' },
+        { ilce: 'Yatağan', bagliAdliye: 'Yatağan', acm: 'Muğla' },
+        { ilce: 'Kavaklıdere', bagliAdliye: 'Yatağan', acm: 'Muğla' },
+        { ilce: 'Menteşe', bagliAdliye: 'Muğla', acm: 'Muğla' },
+        { ilce: 'Ula', bagliAdliye: 'Muğla', acm: 'Muğla' },
+        { ilce: 'Muş', bagliAdliye: 'Muş', acm: 'Muş' },
+        { ilce: 'Varto', bagliAdliye: 'Varto', acm: 'Muş' },
+        { ilce: 'Hasköy', bagliAdliye: 'Muş', acm: 'Muş' },
+        { ilce: 'Korkut', bagliAdliye: 'Muş', acm: 'Muş' },
+        { ilce: 'Nazilli', bagliAdliye: 'Nazilli', acm: 'Aydın' },
+        { ilce: 'Bozdoğan', bagliAdliye: 'Bozdoğan', acm: 'Aydın' },
+        { ilce: 'Karacasu', bagliAdliye: 'Karacasu', acm: 'Aydın' },
+        { ilce: 'Buharkent', bagliAdliye: 'Kuyucak', acm: 'Nazilli' },
+        { ilce: 'Kuyucak', bagliAdliye: 'Kuyucak', acm: 'Aydın' },
+        { ilce: 'Sultanhisar', bagliAdliye: 'Nazilli', acm: 'Nazilli' },
+        { ilce: 'Yenipazar (Aydın)', bagliAdliye: 'Nazilli', acm: 'Aydın' },
+        { ilce: 'Nevşehir', bagliAdliye: 'Nevşehir', acm: 'Nevşehir' },
+        { ilce: 'Avanos', bagliAdliye: 'Avanos', acm: 'Nevşehir' },
+        { ilce: 'Derinkuyu', bagliAdliye: 'Derinkuyu', acm: 'Nevşehir' },
+        { ilce: 'Gülşehir', bagliAdliye: 'Gülşehir', acm: 'Nevşehir' },
+        { ilce: 'Hacıbektaş', bagliAdliye: 'Hacıbektaş', acm: 'Nevşehir' },
+        { ilce: 'Kozaklı', bagliAdliye: 'Kozaklı', acm: 'Nevşehir' },
+        { ilce: 'Ürgüp', bagliAdliye: 'Ürgüp', acm: 'Nevşehir' },
+        { ilce: 'Acıgöl', bagliAdliye: 'Nevşehir', acm: 'Nevşehir' },
+        { ilce: 'Niğde', bagliAdliye: 'Niğde', acm: 'Niğde' },
+        { ilce: 'Bor', bagliAdliye: 'Bor', acm: 'Niğde' },
+        { ilce: 'Çamardı', bagliAdliye: 'Çamardı', acm: 'Niğde' },
+        { ilce: 'Çiftlik', bagliAdliye: 'Çiftlik', acm: 'Niğde' },
+        { ilce: 'Ulukışla', bagliAdliye: 'Ulukışla', acm: 'Niğde' },
+        { ilce: 'Altunhisar', bagliAdliye: 'Bor', acm: 'Niğde' },
+        { ilce: 'Nizip', bagliAdliye: 'Nizip', acm: 'Gaziantep' },
+        { ilce: 'Karkamış', bagliAdliye: 'Nizip', acm: 'Nizip' },
+        { ilce: 'Oltu', bagliAdliye: 'Oltu', acm: 'Erzurum' },
+        { ilce: 'Şenkaya', bagliAdliye: 'Şenkaya', acm: 'Erzurum' },
+        { ilce: 'Narman', bagliAdliye: 'Oltu', acm: 'Oltu' },
+        { ilce: 'Olur', bagliAdliye: 'Oltu', acm: 'Oltu' },
+        { ilce: 'Ordu', bagliAdliye: 'Ordu', acm: 'Ordu' },
+        { ilce: 'Gölköy', bagliAdliye: 'Gölköy', acm: 'Ordu' },
+        { ilce: 'Gürgentepe', bagliAdliye: 'Gürgentepe', acm: 'Ordu' },
+        { ilce: 'Mesudiye', bagliAdliye: 'Mesudiye', acm: 'Ordu' },
+        { ilce: 'Perşembe', bagliAdliye: 'Perşembe', acm: 'Ordu' },
+        { ilce: 'Altınordu', bagliAdliye: 'Ordu', acm: 'Ordu' },
+        { ilce: 'Gülyalı', bagliAdliye: 'Ordu', acm: 'Ordu' },
+        { ilce: 'Kabadüz', bagliAdliye: 'Ordu', acm: 'Ordu' },
+        { ilce: 'Ulubey (Ordu)', bagliAdliye: 'Ordu', acm: 'Ordu' },
+        { ilce: 'Osmaniye', bagliAdliye: 'Osmaniye', acm: 'Osmaniye' },
+        { ilce: 'Bahçe', bagliAdliye: 'Bahçe', acm: 'Osmaniye' },
+        { ilce: 'Düziçi', bagliAdliye: 'Düziçi', acm: 'Osmaniye' },
+        { ilce: 'Kadirli', bagliAdliye: 'Kadirli', acm: 'Osmaniye' },
+        { ilce: 'Hasanbeyli', bagliAdliye: 'Osmaniye', acm: 'Osmaniye' },
+        { ilce: 'Sumbas', bagliAdliye: 'Kadirli', acm: 'Osmaniye' },
+        { ilce: 'Toprakkale', bagliAdliye: 'Osmaniye', acm: 'Osmaniye' },
+        { ilce: 'Ödemiş', bagliAdliye: 'Ödemiş', acm: 'İzmir' },
+        { ilce: 'Bayındır', bagliAdliye: 'Bayındır', acm: 'İzmir' },
+        { ilce: 'Kiraz', bagliAdliye: 'Kiraz', acm: 'İzmir' },
+        { ilce: 'Tire', bagliAdliye: 'Tire', acm: 'İzmir' },
+        { ilce: 'Beydağ', bagliAdliye: 'Ödemiş', acm: 'Ödemiş' },
+        { ilce: 'Patnos', bagliAdliye: 'Patnos', acm: 'Ağrı' },
+        { ilce: 'Bulanık', bagliAdliye: 'Bulanık', acm: 'Muş' },
+        { ilce: 'Malazgirt', bagliAdliye: 'Malazgirt', acm: 'Muş' },
+        { ilce: 'Tutak', bagliAdliye: 'Tutak', acm: 'Ağrı' },
+        { ilce: 'Rize', bagliAdliye: 'Rize', acm: 'Rize' },
+        { ilce: 'Çayeli', bagliAdliye: 'Çayeli', acm: 'Rize' },
+        { ilce: 'Kalkandere', bagliAdliye: 'Kalkandere', acm: 'Rize' },
+        { ilce: 'Pazar', bagliAdliye: 'Pazar', acm: 'Rize' },
+        { ilce: 'Ardeşen', bagliAdliye: 'Pazar', acm: 'Rize' },
+        { ilce: 'Çamlıhemşin', bagliAdliye: 'Pazar', acm: 'Rize' },
+        { ilce: 'Derepazarı', bagliAdliye: 'Rize', acm: 'Rize' },
+        { ilce: 'Fındıklı', bagliAdliye: 'Pazar', acm: 'Rize' },
+        { ilce: 'Güneysu', bagliAdliye: 'Rize', acm: 'Rize' },
+        { ilce: 'Hemşin', bagliAdliye: 'Pazar', acm: 'Rize' },
+        { ilce: 'İkizdere', bagliAdliye: 'Kalkandere', acm: 'Rize' },
+        { ilce: 'İyidere', bagliAdliye: 'Rize', acm: 'Rize' },
+        { ilce: 'Sakarya', bagliAdliye: 'Sakarya', acm: 'Sakarya' },
+        { ilce: 'Akyazı', bagliAdliye: 'Akyazı', acm: 'Sakarya' },
+        { ilce: 'Ferizli', bagliAdliye: 'Ferizli', acm: 'Sakarya' },
+        { ilce: 'Geyve', bagliAdliye: 'Geyve', acm: 'Sakarya' },
+        { ilce: 'Hendek', bagliAdliye: 'Hendek', acm: 'Sakarya' },
+        { ilce: 'Karasu', bagliAdliye: 'Karasu', acm: 'Sakarya' },
+        { ilce: 'Kaynarca', bagliAdliye: 'Kaynarca', acm: 'Sakarya' },
+        { ilce: 'Kocaali', bagliAdliye: 'Kocaali', acm: 'Sakarya' },
+        { ilce: 'Pamukova', bagliAdliye: 'Pamukova', acm: 'Sakarya' },
+        { ilce: 'Sapanca', bagliAdliye: 'Sapanca', acm: 'Sakarya' },
+        { ilce: 'Adapazarı', bagliAdliye: 'Sakarya', acm: 'Sakarya' },
+        { ilce: 'Arifiye', bagliAdliye: 'Sakarya', acm: 'Sakarya' },
+        { ilce: 'Erenler', bagliAdliye: 'Sakarya', acm: 'Sakarya' },
+        { ilce: 'Karapürçek', bagliAdliye: 'Akyazı', acm: 'Sakarya' },
+        { ilce: 'Serdivan', bagliAdliye: 'Sakarya', acm: 'Sakarya' },
+        { ilce: 'Söğütlü', bagliAdliye: 'Sakarya', acm: 'Sakarya' },
+        { ilce: 'Taraklı', bagliAdliye: 'Geyve', acm: 'Sakarya' },
+        { ilce: 'Salihli', bagliAdliye: 'Salihli', acm: 'Manisa' },
+        { ilce: 'Demirci', bagliAdliye: 'Demirci', acm: 'Manisa' },
+        { ilce: 'Kula', bagliAdliye: 'Kula', acm: 'Manisa' },
+        { ilce: 'Selendi', bagliAdliye: 'Selendi', acm: 'Manisa' },
+        { ilce: 'Köprübaşı (Salihli)', bagliAdliye: 'Salihli', acm: 'Salihli' },
+        { ilce: 'Samsun', bagliAdliye: 'Samsun', acm: 'Samsun' },
+        { ilce: 'Kavak', bagliAdliye: 'Kavak', acm: 'Samsun' },
+        { ilce: 'Asarcık', bagliAdliye: 'Kavak', acm: 'Samsun' },
+        { ilce: 'Atakum', bagliAdliye: 'Samsun', acm: 'Samsun' },
+        { ilce: 'Canik', bagliAdliye: 'Samsun', acm: 'Samsun' },
+        { ilce: 'İlkadım', bagliAdliye: 'Samsun', acm: 'Samsun' },
+        { ilce: 'Tekkeköy', bagliAdliye: 'Samsun', acm: 'Samsun' },
+        { ilce: 'Seydişehir', bagliAdliye: 'Seydişehir', acm: 'Konya' },
+        { ilce: 'Beyşehir', bagliAdliye: 'Beyşehir', acm: 'Konya' },
+        { ilce: 'Bozkır', bagliAdliye: 'Bozkır', acm: 'Konya' },
+        { ilce: 'Ahırlı', bagliAdliye: 'Bozkır', acm: 'Seydişehir' },
+        { ilce: 'Derebucak', bagliAdliye: 'Beyşehir', acm: 'Seydişehir' },
+        { ilce: 'Hüyük', bagliAdliye: 'Beyşehir', acm: 'Seydişehir' },
+        { ilce: 'Yalıhüyük', bagliAdliye: 'Seydişehir', acm: 'Seydişehir' },
+        { ilce: 'Siirt', bagliAdliye: 'Siirt', acm: 'Siirt' },
+        { ilce: 'Baykan', bagliAdliye: 'Baykan', acm: 'Siirt' },
+        { ilce: 'Eruh', bagliAdliye: 'Eruh', acm: 'Siirt' },
+        { ilce: 'Kurtalan', bagliAdliye: 'Kurtalan', acm: 'Siirt' },
+        { ilce: 'Pervari', bagliAdliye: 'Pervari', acm: 'Siirt' },
+        { ilce: 'Şirvan', bagliAdliye: 'Şirvan', acm: 'Siirt' },
+        { ilce: 'Aydınlar', bagliAdliye: 'Siirt', acm: 'Siirt' },
+        { ilce: 'Silifke', bagliAdliye: 'Silifke', acm: 'Mersin' },
+        { ilce: 'Anamur', bagliAdliye: 'Anamur', acm: 'Mersin' },
+        { ilce: 'Aydıncık', bagliAdliye: 'Aydıncık', acm: 'Mersin' },
+        { ilce: 'Gülnar', bagliAdliye: 'Gülnar', acm: 'Mersin' },
+        { ilce: 'Mut', bagliAdliye: 'Mut', acm: 'Mersin' },
+        { ilce: 'Bozyazı', bagliAdliye: 'Anamur', acm: 'Silifke' },
+        { ilce: 'Silivri', bagliAdliye: 'Silivri', acm: 'İstanbul' },
+        { ilce: 'Çatalca', bagliAdliye: 'Çatalca', acm: 'İstanbul' },
+        { ilce: 'Marmaraereğlisi', bagliAdliye: 'Marmaraereğlisi', acm: 'Tekirdağ' },
+        { ilce: 'Sinop', bagliAdliye: 'Sinop', acm: 'Sinop' },
+        { ilce: 'Ayancık', bagliAdliye: 'Ayancık', acm: 'Sinop' },
+        { ilce: 'Gerze', bagliAdliye: 'Gerze', acm: 'Sinop' },
+        { ilce: 'Türkeli', bagliAdliye: 'Türkeli', acm: 'Sinop' },
+        { ilce: 'Dikmen', bagliAdliye: 'Gerze', acm: 'Sinop' },
+        { ilce: 'Erfelek', bagliAdliye: 'Sinop', acm: 'Sinop' },
+        { ilce: 'Sivas', bagliAdliye: 'Sivas', acm: 'Sivas' },
+        { ilce: 'Divriği', bagliAdliye: 'Divriği', acm: 'Sivas' },
+        { ilce: 'Gemerek', bagliAdliye: 'Gemerek', acm: 'Sivas' },
+        { ilce: 'Gürün', bagliAdliye: 'Gürün', acm: 'Sivas' },
+        { ilce: 'İmranlı', bagliAdliye: 'İmranlı', acm: 'Sivas' },
+        { ilce: 'Kangal', bagliAdliye: 'Kangal', acm: 'Sivas' },
+        { ilce: 'Şarkışla', bagliAdliye: 'Şarkışla', acm: 'Sivas' },
+        { ilce: 'Yıldızeli', bagliAdliye: 'Yıldızeli', acm: 'Sivas' },
+        { ilce: 'Zara', bagliAdliye: 'Zara', acm: 'Sivas' },
+        { ilce: 'Altınyayla (Sivas)', bagliAdliye: 'Şarkışla', acm: 'Sivas' },
+        { ilce: 'Doğanşar', bagliAdliye: 'Hafik', acm: 'Sivas' },
+        { ilce: 'Hafik', bagliAdliye: 'Sivas', acm: 'Sivas' },
+        { ilce: 'Ulaş', bagliAdliye: 'Sivas', acm: 'Sivas' },
+        { ilce: 'Siverek', bagliAdliye: 'Siverek', acm: 'Şanlıurfa' },
+        { ilce: 'Hilvan', bagliAdliye: 'Hilvan', acm: 'Şanlıurfa' },
+        { ilce: 'Söke', bagliAdliye: 'Söke', acm: 'Aydın' },
+        { ilce: 'Didim', bagliAdliye: 'Didim', acm: 'Aydın' },
+        { ilce: 'Kuşadası', bagliAdliye: 'Kuşadası', acm: 'Aydın' },
+        { ilce: 'Sungurlu', bagliAdliye: 'Sungurlu', acm: 'Çorum' },
+        { ilce: 'Alaca', bagliAdliye: 'Alaca', acm: 'Çorum' },
+        { ilce: 'Boğazkale', bagliAdliye: 'Sungurlu', acm: 'Sungurlu' },
+        { ilce: 'Şanlıurfa', bagliAdliye: 'Şanlıurfa', acm: 'Şanlıurfa' },
+        { ilce: 'Akçakale', bagliAdliye: 'Akçakale', acm: 'Şanlıurfa' },
+        { ilce: 'Birecik', bagliAdliye: 'Birecik', acm: 'Şanlıurfa' },
+        { ilce: 'Bozova', bagliAdliye: 'Bozova', acm: 'Şanlıurfa' },
+        { ilce: 'Ceylanpınar', bagliAdliye: 'Ceylanpınar', acm: 'Şanlıurfa' },
+        { ilce: 'Halfeti', bagliAdliye: 'Halfeti', acm: 'Şanlıurfa' },
+        { ilce: 'Harran', bagliAdliye: 'Harran', acm: 'Şanlıurfa' },
+        { ilce: 'Suruç', bagliAdliye: 'Suruç', acm: 'Şanlıurfa' },
+        { ilce: 'Viranşehir', bagliAdliye: 'Viranşehir', acm: 'Şanlıurfa' },
+        { ilce: 'Eyyübiye', bagliAdliye: 'Şanlıurfa', acm: 'Şanlıurfa' },
+        { ilce: 'Haliliye', bagliAdliye: 'Şanlıurfa', acm: 'Şanlıurfa' },
+        { ilce: 'Karaköprü', bagliAdliye: 'Şanlıurfa', acm: 'Şanlıurfa' },
+        { ilce: 'Şebinkarahisar', bagliAdliye: 'Şebinkarahisar', acm: 'Giresun' },
+        { ilce: 'Alucra', bagliAdliye: 'Alucra', acm: 'Giresun' },
+        { ilce: 'Koyulhisar', bagliAdliye: 'Koyulhisar', acm: 'Sivas' },
+        { ilce: 'Suşehri', bagliAdliye: 'Suşehri', acm: 'Sivas' },
+        { ilce: 'Akıncılar', bagliAdliye: 'Suşehri', acm: 'Şebinkarahisar' },
+        { ilce: 'Çamoluk', bagliAdliye: 'Alucra', acm: 'Şebinkarahisar' },
+        { ilce: 'Gölova', bagliAdliye: 'Suşehri', acm: 'Şebinkarahisar' },
+        { ilce: 'Şırnak', bagliAdliye: 'Şırnak', acm: 'Şırnak' },
+        { ilce: 'Beytüşşebap', bagliAdliye: 'Beytüşşebap', acm: 'Şırnak' },
+        { ilce: 'Uludere', bagliAdliye: 'Uludere', acm: 'Şırnak' },
+        { ilce: 'Tarsus', bagliAdliye: 'Tarsus', acm: 'Mersin' },
+        { ilce: 'Pozantı', bagliAdliye: 'Pozantı', acm: 'Adana' },
+        { ilce: 'Çamlıyayla', bagliAdliye: 'Tarsus', acm: 'Tarsus' },
+        { ilce: 'Tavşanlı', bagliAdliye: 'Tavşanlı', acm: 'Kütahya' },
+        { ilce: 'Emet', bagliAdliye: 'Emet', acm: 'Kütahya' },
+        { ilce: 'Domaniç', bagliAdliye: 'Tavşanlı', acm: 'Tavşanlı' },
+        { ilce: 'Harmancık', bagliAdliye: 'Tavşanlı', acm: 'Tavşanlı' },
+        { ilce: 'Hisarcık', bagliAdliye: 'Emet', acm: 'Tavşanlı' },
+        { ilce: 'Tekirdağ', bagliAdliye: 'Tekirdağ', acm: 'Tekirdağ' },
+        { ilce: 'Hayrabolu', bagliAdliye: 'Hayrabolu', acm: 'Tekirdağ' },
+        { ilce: 'Malkara', bagliAdliye: 'Malkara', acm: 'Tekirdağ' },
+        { ilce: 'Muratlı', bagliAdliye: 'Muratlı', acm: 'Tekirdağ' },
+        { ilce: 'Şarköy', bagliAdliye: 'Şarköy', acm: 'Tekirdağ' },
+        { ilce: 'Süleymanpaşa', bagliAdliye: 'Tekirdağ', acm: 'Tekirdağ' },
+        { ilce: 'Tokat', bagliAdliye: 'Tokat', acm: 'Tokat' },
+        { ilce: 'Almus', bagliAdliye: 'Almus', acm: 'Tokat' },
+        { ilce: 'Artova', bagliAdliye: 'Artova', acm: 'Tokat' },
+        { ilce: 'Erbaa', bagliAdliye: 'Erbaa', acm: 'Tokat' },
+        { ilce: 'Niksar', bagliAdliye: 'Niksar', acm: 'Tokat' },
+        { ilce: 'Reşadiye', bagliAdliye: 'Reşadiye', acm: 'Tokat' },
+        { ilce: 'Başçiftlik', bagliAdliye: 'Niksar', acm: 'Tokat' },
+        { ilce: 'Pazar (Tokat)', bagliAdliye: 'Tokat', acm: 'Tokat' },
+        { ilce: 'Sulusaray', bagliAdliye: 'Artova', acm: 'Tokat' },
+        { ilce: 'Yeşilyurt (Tokat)', bagliAdliye: 'Artova', acm: 'Tokat' },
+        { ilce: 'Trabzon', bagliAdliye: 'Trabzon', acm: 'Trabzon' },
+        { ilce: 'Akçaabat', bagliAdliye: 'Akçaabat', acm: 'Trabzon' },
+        { ilce: 'Araklı', bagliAdliye: 'Araklı', acm: 'Trabzon' },
+        { ilce: 'Çaykara', bagliAdliye: 'Çaykara', acm: 'Trabzon' },
+        { ilce: 'Maçka', bagliAdliye: 'Maçka', acm: 'Trabzon' },
+        { ilce: 'Of', bagliAdliye: 'Of', acm: 'Trabzon' },
+        { ilce: 'Sürmene', bagliAdliye: 'Sürmene', acm: 'Trabzon' },
+        { ilce: 'Tonya', bagliAdliye: 'Tonya', acm: 'Trabzon' },
+        { ilce: 'Vakfıkebir', bagliAdliye: 'Vakfıkebir', acm: 'Trabzon' },
+        { ilce: 'Arsin', bagliAdliye: 'Trabzon', acm: 'Trabzon' },
+        { ilce: 'Beşikdüzü', bagliAdliye: 'Vakfıkebir', acm: 'Trabzon' },
+        { ilce: 'Çarşıbaşı', bagliAdliye: 'Vakfıkebir', acm: 'Trabzon' },
+        { ilce: 'Dernekpazarı', bagliAdliye: 'Sürmene', acm: 'Trabzon' },
+        { ilce: 'Düzköy', bagliAdliye: 'Akçaabat', acm: 'Trabzon' },
+        { ilce: 'Hayrat', bagliAdliye: 'Of', acm: 'Trabzon' },
+        { ilce: 'Köprübaşı (Trabzon)', bagliAdliye: 'Sürmene', acm: 'Trabzon' },
+        { ilce: 'Ortahisar', bagliAdliye: 'Trabzon', acm: 'Trabzon' },
+        { ilce: 'Şalpazarı', bagliAdliye: 'Vakfıkebir', acm: 'Trabzon' },
+        { ilce: 'Yomra', bagliAdliye: 'Trabzon', acm: 'Trabzon' },
+        { ilce: 'Turgutlu', bagliAdliye: 'Turgutlu', acm: 'Manisa' },
+        { ilce: 'Tunceli', bagliAdliye: 'Tunceli', acm: 'Tunceli' },
+        { ilce: 'Hozat', bagliAdliye: 'Hozat', acm: 'Tunceli' },
+        { ilce: 'Mazgirt', bagliAdliye: 'Mazgirt', acm: 'Tunceli' },
+        { ilce: 'Nazımiye', bagliAdliye: 'Nazımiye', acm: 'Tunceli' },
+        { ilce: 'Ovacık (Tunceli)', bagliAdliye: 'Ovacık (Tunceli)', acm: 'Tunceli' },
+        { ilce: 'Pertek', bagliAdliye: 'Pertek', acm: 'Tunceli' },
+        { ilce: 'Pülümür', bagliAdliye: 'Pülümür', acm: 'Tunceli' },
+        { ilce: 'Uşak', bagliAdliye: 'Uşak', acm: 'Uşak' },
+        { ilce: 'Banaz', bagliAdliye: 'Banaz', acm: 'Uşak' },
+        { ilce: 'Eşme', bagliAdliye: 'Eşme', acm: 'Uşak' },
+        { ilce: 'Simav', bagliAdliye: 'Simav', acm: 'Kütahya' },
+        { ilce: 'Sivaslı', bagliAdliye: 'Sivaslı', acm: 'Uşak' },
+        { ilce: 'Karahallı', bagliAdliye: 'Sivaslı', acm: 'Uşak' },
+        { ilce: 'Pazarlar', bagliAdliye: 'Simav', acm: 'Uşak' },
+        { ilce: 'Ulubey (Uşak)', bagliAdliye: 'Uşak', acm: 'Uşak' },
+        { ilce: 'Ünye', bagliAdliye: 'Ünye', acm: 'Ordu' },
+        { ilce: 'Akkuş', bagliAdliye: 'Akkuş', acm: 'Ordu' },
+        { ilce: 'Aybastı', bagliAdliye: 'Aybastı', acm: 'Ordu' },
+        { ilce: 'Fatsa', bagliAdliye: 'Fatsa', acm: 'Ordu' },
+        { ilce: 'Korgan', bagliAdliye: 'Korgan', acm: 'Ordu' },
+        { ilce: 'Kumru', bagliAdliye: 'Kumru', acm: 'Ordu' },
+        { ilce: 'Çamaş', bagliAdliye: 'Fatsa', acm: 'Ünye' },
+        { ilce: 'Çatalpınar', bagliAdliye: 'Fatsa', acm: 'Ünye' },
+        { ilce: 'Çaybaşı', bagliAdliye: 'Ünye', acm: 'Ünye' },
+        { ilce: 'İkizce', bagliAdliye: 'Ünye', acm: 'Ünye' },
+        { ilce: 'Kabataş', bagliAdliye: 'Aybastı', acm: 'Ünye' },
+        { ilce: 'Van', bagliAdliye: 'Van', acm: 'Van' },
+        { ilce: 'Bahçesaray', bagliAdliye: 'Bahçesaray', acm: 'Van' },
+        { ilce: 'Başkale', bagliAdliye: 'Başkale', acm: 'Van' },
+        { ilce: 'Çatak', bagliAdliye: 'Çatak', acm: 'Van' },
+        { ilce: 'Gevaş', bagliAdliye: 'Gevaş', acm: 'Van' },
+        { ilce: 'Gürpınar', bagliAdliye: 'Gürpınar', acm: 'Van' },
+        { ilce: 'Özalp', bagliAdliye: 'Özalp', acm: 'Van' },
+        { ilce: 'Saray (Van)', bagliAdliye: 'Saray (Van)', acm: 'Van' },
+        { ilce: 'Edremit (Van)', bagliAdliye: 'Van', acm: 'Van' },
+        { ilce: 'İpekyolu', bagliAdliye: 'Van', acm: 'Van' },
+        { ilce: 'Tuşba', bagliAdliye: 'Van', acm: 'Van' },
+        { ilce: 'Vezirköprü', bagliAdliye: 'Vezirköprü', acm: 'Samsun' },
+        { ilce: 'Havza', bagliAdliye: 'Havza', acm: 'Samsun' },
+        { ilce: 'Ladik', bagliAdliye: 'Ladik', acm: 'Samsun' },
+        { ilce: 'Yalova', bagliAdliye: 'Yalova', acm: 'Yalova' },
+        { ilce: 'Altınova', bagliAdliye: 'Yalova', acm: 'Yalova' },
+        { ilce: 'Çınarcık', bagliAdliye: 'Yalova', acm: 'Yalova' },
+        { ilce: 'Çiftlikköy', bagliAdliye: 'Yalova', acm: 'Yalova' },
+        { ilce: 'Termal', bagliAdliye: 'Yalova', acm: 'Yalova' },
+        { ilce: 'Yalvaç', bagliAdliye: 'Yalvaç', acm: 'Isparta' },
+        { ilce: 'Şarkikaraağaç', bagliAdliye: 'Şarkikaraağaç', acm: 'Isparta' },
+        { ilce: 'Gelendost', bagliAdliye: 'Yalvaç', acm: 'Yalvaç' },
+        { ilce: 'Yenişarbademli', bagliAdliye: 'Şarkikaraağaç', acm: 'Yalvaç' },
+        { ilce: 'Yozgat', bagliAdliye: 'Yozgat', acm: 'Yozgat' },
+        { ilce: 'Akdağmadeni', bagliAdliye: 'Akdağmadeni', acm: 'Yozgat' },
+        { ilce: 'Çekerek', bagliAdliye: 'Çekerek', acm: 'Yozgat' },
+        { ilce: 'Sorgun', bagliAdliye: 'Sorgun', acm: 'Yozgat' },
+        { ilce: 'Şefaatli', bagliAdliye: 'Şefaatli', acm: 'Yozgat' },
+        { ilce: 'Yerköy', bagliAdliye: 'Yerköy', acm: 'Yozgat' },
+        { ilce: 'Akçakent', bagliAdliye: 'Çiçekdağı', acm: 'Yozgat' },
+        { ilce: 'Aydıncık (Yozgat)', bagliAdliye: 'Çekerek', acm: 'Yozgat' },
+        { ilce: 'Çiçekdağı', bagliAdliye: 'Yerköy', acm: 'Yozgat' },
+        { ilce: 'Kadışehri', bagliAdliye: 'Çekerek', acm: 'Yozgat' },
+        { ilce: 'Saraykent', bagliAdliye: 'Akdağmadeni', acm: 'Yozgat' },
+        { ilce: 'Yüksekova', bagliAdliye: 'Yüksekova', acm: 'Hakkâri' },
+        { ilce: 'Şemdinli', bagliAdliye: 'Şemdinli', acm: 'Hakkâri' },
+        { ilce: 'Zile', bagliAdliye: 'Zile', acm: 'Tokat' },
+        { ilce: 'Turhal', bagliAdliye: 'Turhal', acm: 'Tokat' },
+        { ilce: 'Zonguldak', bagliAdliye: 'Zonguldak', acm: 'Zonguldak' },
+        { ilce: 'Alaplı', bagliAdliye: 'Alaplı', acm: 'Zonguldak' },
+        { ilce: 'Çaycuma', bagliAdliye: 'Çaycuma', acm: 'Zonguldak' },
+        { ilce: 'Devrek', bagliAdliye: 'Devrek', acm: 'Zonguldak' },
+        { ilce: 'Ereğli (Zonguldak)', bagliAdliye: 'Ereğli (Zonguldak)', acm: 'Zonguldak' },
+        { ilce: 'Gökçebey', bagliAdliye: 'Gökçebey', acm: 'Zonguldak' },
+        { ilce: 'Kilimli', bagliAdliye: 'Zonguldak', acm: 'Zonguldak' },
+        { ilce: 'Kozlu', bagliAdliye: 'Zonguldak', acm: 'Zonguldak' }
+]; 
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        if (searchInput && searchResults) {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.trim();
+                searchAdliye(searchTerm, searchResults);
+            });
+        }
+    });
+    function searchAdliye(term, resultsContainer) {
+        resultsContainer.innerHTML = '';
+        if (term.length < 2) {
+            resultsContainer.innerHTML = '<p>Aramak için en az 2 karakter giriniz.</p>';
+            return;
+        }
+        const normalizedTerm = term.toLocaleUpperCase('tr-TR');
+        const results = adliyeVeriTabani.filter(item =>
+            item.ilce.toLocaleUpperCase('tr-TR').includes(normalizedTerm) ||
+            item.bagliAdliye.toLocaleUpperCase('tr-TR').includes(normalizedTerm) ||
+            item.acm.toLocaleUpperCase('tr-TR').includes(normalizedTerm)
+        );
+        if (results.length > 0) {
+            results.forEach(item => {
+                const resultCard = document.createElement('div');
+                resultCard.className = 'result-card'; 
+                resultCard.innerHTML = `
+                    <p class="ilce" style="font-size: 1.2em; font-weight: bold;">${item.ilce}</p>
+                    <p><strong>Bağlı Olduğu Adliye:</strong> ${item.bagliAdliye}</p>
+                    <p><strong>Ağır Ceza Merkezi:</strong> ${item.acm}</p>
+                    <hr>
+                `;
+                resultsContainer.appendChild(resultCard);
+            });
+        } else {
+            resultsContainer.innerHTML = '<p id="no-results" style="color: red;">Sonuç bulunamadı.</p>';
+        }
+    }
+
+    // --- WIZARD SCRIPTLERI ---
+    let wizard_formData = {};
+    function wizard_handleAdiSuc(checkbox) { const otherCheckboxes = document.querySelectorAll('#wizard-crime-list input[type="checkbox"]:not(#isAdiSuc)'); if (checkbox.checked) { otherCheckboxes.forEach(cb => { cb.checked = false; cb.disabled = true; }); } else { otherCheckboxes.forEach(cb => { cb.disabled = false; }); } }
+    function wizard_handleOtherCrimes() { document.getElementById('isAdiSuc').checked = false; const otherCheckboxes = document.querySelectorAll('#wizard-crime-list input[type="checkbox"]:not(#isAdiSuc)'); otherCheckboxes.forEach(cb => { cb.disabled = false; }); }
+    function wizard_handleNoSpecialConditions(checkbox) { const conditionCheckboxes = [document.getElementById('isCocuk'), document.getElementById('hasCocuk'), document.getElementById('isHasta')]; if(checkbox.checked) { conditionCheckboxes.forEach(cb => { cb.checked = false; cb.disabled = true; }); wizard_toggleMahsupForm(); } else { conditionCheckboxes.forEach(cb => { cb.disabled = false; }); } }
+    function wizard_uncheckNoSpecialConditions() { document.getElementById('noSpecialConditions').checked = false; const conditionCheckboxes = [document.getElementById('isCocuk'), document.getElementById('hasCocuk'), document.getElementById('isHasta')]; conditionCheckboxes.forEach(cb => { cb.disabled = false; }); }
+    function wizard_toggleMahsupForm() { const isCocuk = document.getElementById('isCocuk').checked; document.getElementById('cocukMahsupGrubu').style.display = isCocuk ? 'block' : 'none'; document.getElementById('adultMahsupGrubu').style.display = isCocuk ? 'none' : 'block'; }
+    function wizard_goToStep(stepNumber) { if (stepNumber > 1) { if (!wizard_validateStep(stepNumber - 1)) { return; } wizard_saveStepData(stepNumber - 1); } document.querySelectorAll('#app-wizard-container .wizard-step').forEach(step => step.classList.remove('active')); document.getElementById('step' + stepNumber).classList.add('active'); }
+    function wizard_validateStep(step) { if (step === 1) { const sucTarihiValue = document.getElementById('sucTarihi').value; const girisTarihiValue = document.getElementById('girisTarihi').value; const cezaTuruValue = document.getElementById('cezaTuru').value; const cezaYilValue = parseInt(document.getElementById('cezaYil').value) || 0; const cezaAyValue = parseInt(document.getElementById('cezaAy').value) || 0; const cezaGunValue = parseInt(document.getElementById('cezaGun').value) || 0; if (!sucTarihiValue || !girisTarihiValue) { alert("Lütfen tüm tarih alanlarını doldurunuz.\n\nNot: Elle tarih giriyorsanız tarayıcınızın desteklediği formatı kullandığınızdan emin olun veya takvim simgesini kullanın."); return false; } if (cezaTuruValue === 'sureli' && (cezaYilValue + cezaAyValue + cezaGunValue === 0)) { alert("Lütfen 'Süreli Hapis Cezası Miktarı' alanını doldurunuz."); return false; } } return true; }     
+    function wizard_saveStepData(step) { 
+        const data = wizard_formData; 
+        if (step === 1) { 
+            data.cezaTuru = document.getElementById('cezaTuru').value; 
+            data.cezaYil = parseInt(document.getElementById('cezaYil').value) || 0; 
+            data.cezaAy = parseInt(document.getElementById('cezaAy').value) || 0; 
+            data.cezaGun = parseInt(document.getElementById('cezaGun').value) || 0; 
+            data.sucTarihi = document.getElementById('sucTarihi').value; 
+            data.girisTarihi = document.getElementById('girisTarihi').value; 
+        } else if (step === 2) { 
+            data.tekerrur = document.querySelector('input[name="tekerrur"]:checked').value; 
+            data.isCocuk = document.getElementById('isCocuk').checked; 
+            data.hasCocuk = document.getElementById('hasCocuk').checked; 
+            data.isHasta = document.getElementById('isHasta').checked; 
+        } else if (step === 3) { 
+            if(data.isCocuk) { 
+                data.mahsupUnder15 = parseInt(document.getElementById('mahsupUnder15').value) || 0; 
+                data.mahsup15to18 = parseInt(document.getElementById('mahsup15to18').value) || 0; 
+                data.mahsupAdult = 0; 
+            } else { 
+                data.mahsupAdult = parseInt(document.getElementById('mahsupAdult').value) || 0; 
+                data.mahsupUnder15 = 0; 
+                data.mahsup15to18 = 0; 
+            } 
+        } else if (step === 4) { 
+            data.isKastenOldurme = document.getElementById('isKastenOldurme').checked;
+            data.isEseKarsiYaralama = document.getElementById('isEseKarsiYaralama').checked; 
+            data.isCinsel = document.getElementById('isCinsel').checked; 
+            data.isOzelHayat = document.getElementById('isOzelHayat').checked; 
+            data.isUyusturucu = document.getElementById('isUyusturucu').checked; 
+            data.isDevlet = document.getElementById('isDevlet').checked; 
+            data.isTeror = document.getElementById('isTeror').checked; 
+            data.isOrgut = document.getElementById('isOrgut').checked; 
+        } 
+    }
+ 
+    function wizard_formatDate(date) { if (!(date instanceof Date) || isNaN(date)) return "Hesaplanamadı"; return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+    function wizard_addDays(date, days) { const newDate = new Date(date); newDate.setDate(newDate.getDate() + days); return newDate; }
+    function wizard_addDuration(date, years, months, days) { const newDate = new Date(date); newDate.setFullYear(newDate.getFullYear() + years); newDate.setMonth(newDate.getMonth() + months); newDate.setDate(newDate.getDate() + days); return newDate; }
+    
+    function wizard_hesapla() {
+        wizard_saveStepData(4);
+        wizard_goToStep(5);
+        const data = wizard_formData;
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsContainer.innerHTML = ''; 
+        const girisTarihi = new Date(data.girisTarihi);
+        girisTarihi.setHours(0, 0, 0, 0);
+        const sucTarihi = new Date(data.sucTarihi);
+        sucTarihi.setHours(0,0,0,0);
+        const toplamMahsupGun = data.mahsupAdult + data.mahsupUnder15 + data.mahsup15to18;
+        let avantajGun = 0;
+        const cutoffDate2020 = new Date('2020-03-30');
+        if (data.isCocuk) {
+            if (sucTarihi <= cutoffDate2020) {
+                avantajGun += data.mahsupUnder15 * 2;
+                avantajGun += data.mahsup15to18 * 1;
+            } else {
+                avantajGun += data.mahsupUnder15 * 1;
+            }
+        }
+        let hakEderekTarihi = null;
+        const toplamCezaGun = (data.cezaYil * 365.25) + (data.cezaAy * 30.44) + data.cezaGun;
+        if (data.cezaTuru === 'sureli') {
+            let cezaninBittigiTarih = wizard_addDuration(new Date(data.girisTarihi), data.cezaYil, data.cezaAy, data.cezaGun);
+            hakEderekTarihi = wizard_addDays(cezaninBittigiTarih, -toplamMahsupGun);
+        }
+        let kosulluSalivermeOrani = 1/2;
+        let oranAciklama = "Adi suçlar için standart oran (1/2).";
+        if (data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isDevlet || data.isOrgut || data.isTeror || data.isEseKarsiYaralama) { kosulluSalivermeOrani = 2/3; oranAciklama = "Katalog suçlar için oran (2/3)."; }
+        if (data.isUyusturucu) { kosulluSalivermeOrani = 3/4; oranAciklama = "Uyuşturucu madde ticareti için oran (3/4)."; }
+        if (data.tekerrur === 'var' && kosulluSalivermeOrani < 2/3) { kosulluSalivermeOrani = 2/3; oranAciklama = "Tekerrür nedeniyle oran (2/3)."; }
+        if (data.tekerrur === 'ikinci' && kosulluSalivermeOrani < 3/4) { kosulluSalivermeOrani = 3/4; oranAciklama = "İkinci defa tekerrür nedeniyle oran (3/4)."; }
+        
+        const yatilacakGun = Math.ceil(toplamCezaGun * kosulluSalivermeOrani);
+        const cezaevindeGecirilecekNetGun = yatilacakGun - toplamMahsupGun - avantajGun;
+        let kosulluSalivermeTarihi = wizard_addDays(new Date(data.girisTarihi), cezaevindeGecirilecekNetGun);
+        kosulluSalivermeTarihi.setHours(0,0,0,0);
+
+        let denetimSuresiYil = 1;
+        let denetimAciklama = "Standart denetimli serbestlik süresi (1 Yıl).";
+        const istisnaSuclarDS = data.isKastenOldurme || data.isCinsel || data.isOzelHayat || data.isUyusturucu || data.isDevlet || data.isTeror || data.isOrgut;
+        if (sucTarihi <= cutoffDate2020 && !istisnaSuclarDS) {
+            denetimSuresiYil = 3;
+            denetimAciklama = "Suç 30/03/2020 öncesi ve istisna dışı olduğu için denetim süresi (3 Yıl - Geçici M. 6).";
+        }
+
+        if (data.isEseKarsiYaralama) {
+            denetimSuresiYil = 1;
+            denetimAciklama = "Eşe karşı kasten yaralama suçunda denetim süresi (1 Yıl) olarak uygulanır.";
+        }
+        
+        if (data.hasCocuk) { let sure = sucTarihi <= cutoffDate2020 ? 4 : 2; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `0-6 yaş çocuk sahibi kadın hükümlü avantajı (${sure} Yıl).`; } }
+        if (data.isHasta) { let sure = 3; if (sure > denetimSuresiYil) { denetimSuresiYil = sure; denetimAciklama = `Ağır hastalık/engellilik/kocama durumu avantajı (${sure} Yıl).`; } }
+
+        let denetimTarihi = new Date(kosulluSalivermeTarihi);
+        denetimTarihi.setFullYear(denetimTarihi.getFullYear() - denetimSuresiYil);
+        denetimTarihi.setHours(0,0,0,0);
+
+        let minStayDate = null;
+        let minStayReason = "";
+        const post2020CutoffDate = new Date('2020-03-30');
+
+        if (sucTarihi > post2020CutoffDate) {
+            const isKasti = document.getElementById('isAdiSuc').checked || istisnaSuclarDS || data.isEseKarsiYaralama; 
+            const toplamCezaYil = toplamCezaGun / 365.25;
+
+            if (isKasti && toplamCezaYil > 3) {
+                minStayDate = wizard_addDuration(new Date(girisTarihi), 0, 1, 0);
+                minStayReason = "<p class='reason'><b>Not:</b> Suç tarihi 30/03/2020 sonrası ve kasti suçun cezası 3 yıldan fazla olduğu için, kapalı cezaevinde en az 1 ay kalma kuralı uygulanmıştır.</p>";
+            }
+            
+            if (data.tekerrur === 'ikinci' && yatilacakGun > 30) {
+                 const oneMonthMinDate = wizard_addDuration(new Date(girisTarihi), 0, 1, 0);
+                 if (!minStayDate || oneMonthMinDate > minStayDate) {
+                     minStayDate = oneMonthMinDate;
+                     minStayReason = "<p class='reason'><b>Not:</b> Suç tarihi 30/03/2020 sonrası ve ikinci kez tekerrür hükümleri uygulandığı için, kapalı cezaevinde en az 1 ay kalma kuralı uygulanmıştır.</p>";
+                 }
+            }
+
+            if (minStayDate && denetimTarihi < minStayDate) {
+                denetimTarihi = minStayDate;
+            }
+        }
+
+        let denetimTarihiDisplay;
+        let denetimTarihiClass = "date";
+        if (denetimTarihi <= girisTarihi && minStayReason === "") {
+            denetimTarihiDisplay = "GİR-ÇIK YAPACAK";
+            denetimTarihiClass = "date gir-cik";
+        } else {
+            denetimTarihiDisplay = wizard_formatDate(denetimTarihi);
+        }
+        
+        const geciciMadde10Tarihi = new Date('2023-07-31');
+        let denetimAvantajTarihi = null;
+        const istisnaSuclarGecici10 = data.isDevlet || data.isTeror || data.isOrgut;
+        if (sucTarihi <= geciciMadde10Tarihi && !istisnaSuclarGecici10 && data.cezaTuru === 'sureli') {
+            denetimAvantajTarihi = new Date(denetimTarihi);
+            denetimAvantajTarihi.setFullYear(denetimAvantajTarihi.getFullYear() - 3);
+            denetimAvantajTarihi.setHours(0,0,0,0);
+        }
+
+        let finalHTML = `<div class="result-item info"><h3>Mahsup Bilgileri</h3><p>Cezaevinde geçirilecek süreden düşülen toplam tutukluluk süresi: <strong>${toplamMahsupGun} gün</strong></p>${avantajGun > 0 ? `<p>Koşullu salıverilme hesabına eklenen avantaj süresi: <strong>${avantajGun} gün</strong> (Çocuk hükümlü indirimi)</p>` : ''}</div>`;
+        if (hakEderekTarihi) { finalHTML += `<div class="result-item"><h3>Hak Ederek Tahliye Tarihi</h3><p>Cezanın (mahsup sonrası) tamamen bittiği tarih: <span class="date">${wizard_formatDate(hakEderekTarihi)}</span></p></div>`; }
+        finalHTML += `<div class="result-item"><h3>Koşullu Salıverilme Tarihi</h3><p>İyi halli olarak cezaevinden şartlı çıkılabilecek tarih: <span class="date">${wizard_formatDate(kosulluSalivermeTarihi)}</span></p><p class="reason">${oranAciklama}</p></div>`;
+        finalHTML += `<div class="result-item"><h3>Denetimli Serbestlik Tarihi</h3><p>Denetimli serbestlik tedbiriyle cezaevinden çıkılabilecek tarih: <span class="${denetimTarihiClass}">${denetimTarihiDisplay}</span></p><p class="reason">${denetimAciklama}</p>${minStayReason}</div>`;
+        if (denetimAvantajTarihi) {
+            let denetimAvantajTarihiDisplay;
+            let denetimAvantajTarihiClass = "date";
+            let avantMinStayReason = minStayReason; 
+            if(denetimAvantajTarihi <= girisTarihi && avantMinStayReason === "") {
+                denetimAvantajTarihiDisplay = "GİR-ÇIK YAPACAK";
+                denetimAvantajTarihiClass = "date gir-cik";
+            } else {
+                denetimAvantajTarihiDisplay = wizard_formatDate(denetimAvantajTarihi);
+            }
+            const toplamCezaYil = data.cezaYil + (data.cezaAy / 12);
+            const kapaliCezaAciklama = (toplamCezaYil < 10) ? "toplam cezası 10 yıldan az olduğu için <strong>kapalı cezaevinde en az 1 ay</strong>" : "toplam cezası 10 yıl veya daha fazla olduğu için <strong>kapalı cezaevinde en az 3 ay</strong>";
+            const avantajAciklama = `Bu haktan yararlanabilmek için hükümlünün, ${kapaliCezaAciklama} kaldıktan sonra açık cezaevine ayrılma şartlarını taşıması gerekir. Bu hesaplama, bu şartların oluştuğu varsayımına dayanır.`;
+            finalHTML += `<div class="result-item special"><h3>DENETİMLİ SERBESTLİK TARİHİ (7456 S.K. Geçici Madde 10 Avantajıyla)</h3><p><strong>31/07/2023 tarihinden önceki suçlar için hak kazanılabilecek en erken tarih:</strong> <span class="${denetimAvantajTarihiClass}">${denetimAvantajTarihiDisplay}</span></p><p class="reason">${avantajAciklama}</p>${avantMinStayReason}</div>`;
+        }
+        resultsContainer.innerHTML = finalHTML;
+    }
+
+    // --- Basit Hesaplayıcı Scriptleri ---
+    function parseDate1(dateStr) { let dateParts = dateStr.split(/[\/\.]/); if (dateParts.length === 3) { let day = parseInt(dateParts[0], 10); let month = parseInt(dateParts[1], 10); let year = parseInt(dateParts[2], 10); if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); } } if (dateStr.length === 8 && /^\d+$/.test(dateStr)) { let day = parseInt(dateStr.substring(0, 2), 10); let month = parseInt(dateStr.substring(2, 4), 10); let year = parseInt(dateStr.substring(4, 8), 10); if (!isNaN(day) && !isNaN(month) && !isNaN(year)) { return new Date(year, month - 1, day); } } return null; }
+    function formatDate1(date) { return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`; }
+    function addSubtractDays() { const resultDiv = document.getElementById("result1"); const errorDiv = document.getElementById("error1"); resultDiv.textContent = ""; errorDiv.textContent = ""; const date1 = parseDate1(document.getElementById("date1").value); const daysToAdd = parseInt(document.getElementById("days").value); if (!date1) { errorDiv.textContent = "Geçersiz Tarih 1 formatı."; return; } if (isNaN(daysToAdd)) { errorDiv.textContent = "Geçersiz gün sayısı."; return; } date1.setDate(date1.getDate() + daysToAdd); resultDiv.textContent = "Yeni Tarih: " + formatDate1(date1); }
+    function calculateDifference() { const resultDiv = document.getElementById("result1"); const errorDiv = document.getElementById("error1"); resultDiv.textContent = ""; errorDiv.textContent = ""; const date1 = parseDate1(document.getElementById("date1").value); const date2 = parseDate1(document.getElementById("date2").value); if (!date1) { errorDiv.textContent = "Geçersiz Tarih 1 formatı."; return; } if (!date2) { errorDiv.textContent = "Geçersiz Tarih 2 formatı."; return; } const diffInMs = Math.abs(date2.getTime() - date1.getTime()); resultDiv.textContent = "Fark: " + Math.ceil(diffInMs / 86400000) + " gün"; }
+
+    // --- Gelişmiş Hesaplayıcı Scriptleri (YENİ) ---
+    function addPeriod() {
+        const container = document.getElementById('periodsContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'period-row';
+        newRow.innerHTML = `
+        <input type="number" class="period-years" value="0" placeholder="Yıl" min="0">
+        <input type="number" class="period-months" value="0" placeholder="Ay" min="0" max="11">
+        <input type="number" class="period-days" value="0" placeholder="Gün" min="0" max="30">
+        <select class="period-ratio">
+            <option value="0.5">1/2</option>
+            <option value="0.6666666666666666">2/3</option>
+            <option value="0.75">3/4</option>
+        </select>
+        <button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>
+        `;
+        container.appendChild(newRow);
+    }
+
+    function calculateAdvancedDate() {
+        const startDateString = document.getElementById("startDate").value;
+        if (!startDateString) {
+            alert("Lütfen başlangıç tarihi seçin.");
+            return;
+        }
+        const startDate = new Date(startDateString);
+        
+        let totalCalculatedDays = 0;
+        const periodRows = document.querySelectorAll('#app2-container .period-row');
+        periodRows.forEach(row => {
+            const years = parseInt(row.querySelector('.period-years').value) || 0;
+            const months = parseInt(row.querySelector('.period-months').value) || 0;
+            const days = parseInt(row.querySelector('.period-days').value) || 0;
+            const ratio = parseFloat(row.querySelector('.period-ratio').value);
+            
+            const periodDays = (years * 365) + (months * 30) + days;
+            const calculatedDays = Math.floor(periodDays * ratio);
+            totalCalculatedDays += calculatedDays;
+        });
+
+        let prisonDays = parseInt(document.getElementById("prisonDays").value) || 0;
+        if (prisonDays === 0) {
+            const prisonStartStr = document.getElementById("prisonStart").value;
+            const prisonEndStr = document.getElementById("prisonEnd").value;
+            if (prisonStartStr && prisonEndStr) {
+                const prisonStart = new Date(prisonStartStr);
+                const prisonEnd = new Date(prisonEndStr);
+                prisonDays = Math.max(0, Math.floor((prisonEnd - prisonStart) / (1000 * 60 * 60 * 24)) + 1);
+            }
+        }
+
+        totalCalculatedDays = Math.max(0, totalCalculatedDays - prisonDays);
+
+        const resultDate = new Date(startDate);
+        resultDate.setDate(startDate.getDate() + totalCalculatedDays);
+        const resultDateString = formatDate2(resultDate);
+
+        document.getElementById("result2").innerHTML = `
+            <div class="result-item">
+            <h3>Hesaplama Sonuçları</h3>
+            <p><strong>Hesaplanan Toplam Gün:</strong> ${totalCalculatedDays} <small>(Cezaevi dönemi ${prisonDays} gün düşüldü)</small></p>
+            <p><strong>Sonuç Tarihi:</strong> ${resultDateString}</p>
+            </div>
+            
+            <div class="date-range">
+            <h3>Yıl Çıkarma <span class="tooltip">ℹ️<span class="tooltiptext">Mahkeme tarafından belirlenen yıl çıkarma miktarı</span></span></h3>
+            <select id="yearSubtraction" class="custom-select">
+                <option value="3">3 Yıl</option>
+                <option value="1">1 Yıl</option>
+            </select>
+            </div>
+            
+            <div class="date-range">
+            <h3>Denetim Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Denetimli serbestlik süresini tarih aralığı veya gün olarak giriniz</span></span></h3>
+            <div class="input-group">
+                <div style="flex: 1;">
+                <label>Başlangıç Tarihi:</label>
+                <input type="date" id="supervisionStart">
+                </div>
+                <div style="flex: 1;">
+                <label>Bitiş Tarihi:</label>
+                <input type="date" id="supervisionEnd">
+                </div>
+            </div>
+            <div class="input-group">
+                <span>VEYA gün olarak girin:</span>
+                <input type="number" id="supervisionDays" value="0" min="0" placeholder="Gün">
+            </div>
+            </div>
+            
+            <button onclick="finalComparison('${resultDateString}', ${totalCalculatedDays}, ${prisonDays})" style="background-color: var(--warning-color); width: 100%;">
+            <span style="font-size: 18px;">🔍 NİHAİ TARİHİ HESAPLA</span>
+            </button>
+        `;
+    }
+
+    function finalComparison(resultDateString, totalCalculatedDays, prisonDays) {
+        const subtractionYears = parseInt(document.getElementById("yearSubtraction").value);
+        const parts = resultDateString.split('/');
+        const resultDate = new Date(parts[2], parts[1]-1, parts[0]);
+        
+        let supervisionDays = parseInt(document.getElementById("supervisionDays").value) || 0;
+        if (supervisionDays === 0) {
+            const supervisionStartStr = document.getElementById("supervisionStart").value;
+            const supervisionEndStr = document.getElementById("supervisionEnd").value;
+            if (supervisionStartStr && supervisionEndStr) {
+                const supervisionStart = new Date(supervisionStartStr);
+                const supervisionEnd = new Date(supervisionEndStr);
+                supervisionDays = Math.max(0, Math.floor((supervisionEnd - supervisionStart) / (1000 * 60 * 60 * 24)) + 1);
+            }
+        }
+
+        const yearDays = (subtractionYears * 365) - supervisionDays;
+        const adjustedYearDays = Math.max(0, yearDays);
+        
+        const totalDaysToSubtract = adjustedYearDays;
+        
+        const finalDate = new Date(resultDate);
+        finalDate.setDate(resultDate.getDate() - totalDaysToSubtract);
+        
+        const finalDateString = formatDate2(finalDate);
+        const startDate = new Date(document.getElementById("startDate").value);
+
+        const diffInDays = Math.floor((finalDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        
+        const comparisonResult = diffInDays <= 0 
+            ? '<span class="green-bg">✅ Giriş-Çıkış (Tahliye günü)</span>' 
+            : `<span class="red-bg">⏳ ${diffInDays} gün yatar</span>`;
+        
+        document.getElementById("result2").innerHTML += `
+            <div class="result-item" style="margin-top: 20px; background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
+            <h3>Nihai Sonuç</h3>
+            <p><strong>Düzeltilmiş Yıl Günü:</strong> ${adjustedYearDays} <small>(${subtractionYears} yıl × 365 - ${supervisionDays} denetim günü)</small></p>
+            <p><strong>Cezaevi Günü:</strong> ${prisonDays} <small>(zaten hesaplanan toplam günden düşüldü)</small></p>
+            <p><strong>Toplam Çıkarılan Gün (yıl çıkarma):</strong> ${totalDaysToSubtract}</p>
+            <p><strong>Nihai Tahliye Tarihi:</strong> <span style="font-weight: bold; font-size: 18px;">${finalDateString}</span></p>
+            <p><strong>Karşılaştırma:</strong> ${comparisonResult}</p>
+            </div>
+        `;
+    }
+
+    function formatDate2(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // --- Hatırlatıcı Scriptleri ---
+    let reminders = [];
+    function loadReminders() { const savedReminders = localStorage.getItem('reminders'); if (savedReminders) { try { reminders = JSON.parse(savedReminders) || []; } catch(e) { reminders = []; } displayReminders(); } }
+    function saveReminders() { localStorage.setItem('reminders', JSON.stringify(reminders)); }
+    function addReminder() { const errorDiv = document.getElementById("error3"); errorDiv.textContent = ""; const fileNumber = document.getElementById("fileNumber").value, correspondenceType = document.getElementById("correspondenceType").value, dueDateType = document.getElementById("dueDateType").value, dueDateValue = document.getElementById("dueDateValue").value; if (!fileNumber || !correspondenceType || !dueDateValue) { errorDiv.textContent = "Lütfen tüm alanları doldurun."; return; } let dueDate; if (dueDateType === "days") { const days = parseInt(dueDateValue); if (isNaN(days)) { errorDiv.textContent = "Geçersiz gün sayısı."; return; } const today = new Date(); today.setDate(today.getDate() + days); dueDate = formatDate3(today); } else { dueDate = parseDueDate3(dueDateValue); if (!dueDate) { errorDiv.textContent = "Geçersiz tarih formatı."; return; } } reminders.push({ fileNumber, correspondenceType, dueDate, done: false }); saveReminders(); displayReminders(); document.getElementById("fileNumber").value = ""; document.getElementById("dueDateValue").value = ""; }
+    function parseDueDate3(dateStr) { const p = dateStr.split("/"); if (p.length === 3) { const date = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0])); if (!isNaN(date.getTime())) return formatDate3(date); } return null; }
+    function formatDate3(date) { if (date instanceof Date) return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`; return date; }
+    function displayReminders() { const remindersDiv = document.getElementById("reminders"); remindersDiv.innerHTML = ""; let hasOverdueTask = false; reminders.forEach((reminder, index) => { const reminderDiv = document.createElement("div"); reminderDiv.classList.add("reminder-item"); const dueDateObj = new Date(reminder.dueDate.split('/').reverse().join('-')); if (dueDateObj < new Date() && !reminder.done) { reminderDiv.classList.add("overdue"); hasOverdueTask = true; } if (reminder.done) { reminderDiv.classList.add("done"); } reminderDiv.innerHTML = `<span><b>Dosya:</b> ${reminder.fileNumber}, <b>Tür:</b> ${reminder.correspondenceType}, <b>Son Tarih:</b> ${reminder.dueDate}</span><button onclick="markDone(${index})">${reminder.done ? 'Geri Al' : 'Tamamlandı'}</button>`; remindersDiv.appendChild(reminderDiv); }); if (hasOverdueTask && typeof Notification !== 'undefined' && Notification.permission === "granted" && !document.hidden) { showNotification("Süresi geçmiş hatırlatma var!"); } saveReminders(); }
+    function markDone(index) { reminders[index].done = !reminders[index].done; saveReminders(); displayReminders(); }
+    function removeCompleted() { reminders = reminders.filter(r => !r.done); saveReminders(); displayReminders(); }
+    function showNotification(message) { if (typeof Notification !== 'undefined' && Notification.permission !== "denied") { Notification.requestPermission().then(p => { if (p === "granted") new Notification(message); }); } }
+    function checkOverdueTasks() { reminders.forEach((reminder, index) => { const reminderDiv = document.querySelector(`#reminders .reminder-item:nth-child(${index + 1})`); if (reminderDiv) { const dueDateObj = new Date(reminder.dueDate.split('/').reverse().join('-')); if (dueDateObj < new Date() && !reminder.done) reminderDiv.classList.add("overdue"); else reminderDiv.classList.remove("overdue"); } }); }
+
+    // --- SAYFA YÜKLENDİĞİNDE ÇALIŞACAK KODLAR ---
+    window.onload = () => {
+        wizard_toggleMahsupForm();
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('sucTarihi').value = today;
+        document.getElementById('girisTarihi').value = today;
+        if(document.getElementById('startDate')) { document.getElementById('startDate').value = today; }
+        document.getElementById('cezaTuru').addEventListener('change', function() { document.getElementById('sureliHapisGrubu').style.display = (this.value === 'sureli') ? 'block' : 'none'; });
+        loadReminders();
+        if (typeof Notification !== 'undefined') Notification.requestPermission();
+        checkOverdueTasks();
+        setInterval(checkOverdueTasks, 60000); 
+    };
+</script>
+
+</body>
+</html>
