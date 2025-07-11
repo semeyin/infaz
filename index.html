@@ -1728,8 +1728,8 @@
         const diffInDays = Math.floor((finalDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
         
         const comparisonResult = diffInDays <= 0 
-            ? '<span class="green-bg">✅ Giriş-Çıkış (Tahliye günü)</span>' 
-            : `<span class="red-bg">⏳ ${diffInDays} gün yatar</span>`;
+            ? '<span class="green-bg">✅ Giriş-Çıkış (Tahliye günü) UNUTMA SUÇ TARİHİ 01/03/2020 TARİHİNDEN SONRA İSE 3 YILDAN FAZLA HAPİS CEZASI İÇİN EN AZ 1 AY KAPALI CEZAEVİNDE KALINMALI</span>' 
+            : `<span class="red-bg">⏳ ${diffInDays} gün yatar UNUTMA SUÇ TARİHİ 01/03/2020 TARİHİNDEN SONRA İSE 3 YILDAN FAZLA HAPİS CEZASI İÇİN EN AZ 1 AY KAPALI CEZAEVİNDE KALINMALI</span>`;
         
         document.getElementById("result2").innerHTML += `
             <div class="result-item" style="margin-top: 20px; background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
