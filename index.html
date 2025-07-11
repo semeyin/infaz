@@ -304,7 +304,7 @@
             <h1>Gelişmiş Tarih Hesaplayıcı</h1>
 
             <div class="period-container" id="periodsContainer">
-              <h3>Dönemler <span class="tooltip">ℹ️<span class="tooltiptext">Her dönem için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
+              <h3>CEZALAR <span class="tooltip">ℹ️<span class="tooltiptext">Her dönem için yıl, ay, gün ve oran bilgilerini giriniz</span></span></h3>
               <div class="period-row-header">
     <span>Yıl</span>
     <span>Ay</span>
@@ -324,13 +324,13 @@
                 <button class="remove-period-btn" onclick="this.parentNode.remove()">×</button>
               </div>
             </div>
-            <button class="add-period-btn" onclick="addPeriod()">+ Yeni Dönem Ekle</button>
+            <button class="add-period-btn" onclick="addPeriod()">+ Yeni Ceza Ekle</button>
           
             <div class="date-range">
-              <h3>Cezaevi Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
+              <h3> Daha Önce Cezaevinde Geçirilen Süre (Tutuklu yada Hükümlü) <span class="tooltip">ℹ️<span class="tooltiptext">Cezaevinde geçirilen süreyi tarih aralığı veya gün olarak giriniz</span></span></h3>
               <div class="input-group">
                 <div style="flex: 1;">
-                  <label>Başlangıç Tarihi:</label>
+                  <label>Cezaevine Giriş Tarihi:</label>
                   <input type="date" id="prisonStart">
                 </div>
                 <div style="flex: 1;">
@@ -1662,12 +1662,12 @@
         document.getElementById("result2").innerHTML = `
             <div class="result-item">
             <h3>Hesaplama Sonuçları</h3>
-            <p><strong>Hesaplanan Toplam Gün:</strong> ${totalCalculatedDays} <small>(Cezaevi dönemi ${prisonDays} gün düşüldü)</small></p>
-            <p><strong>Sonuç Tarihi:</strong> ${resultDateString}</p>
+            <p><strong>Fiilen infaz edilmesi gereken süre:</strong> ${totalCalculatedDays} <small>(Cezaevi dönemi ${prisonDays} gün düşüldü)</small></p>
+            <p><strong>Koşullu Salıverilme Tarihi:</strong> ${resultDateString}</p>
             </div>
             
             <div class="date-range">
-            <h3>Yıl Çıkarma <span class="tooltip">ℹ️<span class="tooltiptext">Mahkeme tarafından belirlenen yıl çıkarma miktarı</span></span></h3>
+            <h3>Denetimli Serbsetlikten Faydalanabileceği süre <span class="tooltip">ℹ️<span class="tooltiptext">Mahkeme tarafından belirlenen yıl çıkarma miktarı</span></span></h3>
             <select id="yearSubtraction" class="custom-select">
                 <option value="3">3 Yıl</option>
                 <option value="1">1 Yıl</option>
@@ -1675,7 +1675,7 @@
             </div>
             
             <div class="date-range">
-            <h3>Denetim Dönemi <span class="tooltip">ℹ️<span class="tooltiptext">Denetimli serbestlik süresini tarih aralığı veya gün olarak giriniz</span></span></h3>
+            <h3>Daha Önce Denetimli Serbestlikte Geçirdiği Süreler <span class="tooltip">ℹ️<span class="tooltiptext">Denetimli serbestlik süresini tarih aralığı veya gün olarak giriniz</span></span></h3>
             <div class="input-group">
                 <div style="flex: 1;">
                 <label>Başlangıç Tarihi:</label>
@@ -1693,7 +1693,7 @@
             </div>
             
             <button onclick="finalComparison('${resultDateString}', ${totalCalculatedDays}, ${prisonDays})" style="background-color: var(--warning-color); width: 100%;">
-            <span style="font-size: 18px;">🔍 NİHAİ TARİHİ HESAPLA</span>
+            <span style="font-size: 18px;">🔍 DENETİM TAHLİYE TARİHİ HESAPLA</span>
             </button>
         `;
     }
@@ -1733,12 +1733,12 @@
         
         document.getElementById("result2").innerHTML += `
             <div class="result-item" style="margin-top: 20px; background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
-            <h3>Nihai Sonuç</h3>
-            <p><strong>Düzeltilmiş Yıl Günü:</strong> ${adjustedYearDays} <small>(${subtractionYears} yıl × 365 - ${supervisionDays} denetim günü)</small></p>
-            <p><strong>Cezaevi Günü:</strong> ${prisonDays} <small>(zaten hesaplanan toplam günden düşüldü)</small></p>
-            <p><strong>Toplam Çıkarılan Gün (yıl çıkarma):</strong> ${totalDaysToSubtract}</p>
-            <p><strong>Nihai Tahliye Tarihi:</strong> <span style="font-weight: bold; font-size: 18px;">${finalDateString}</span></p>
-            <p><strong>Karşılaştırma:</strong> ${comparisonResult}</p>
+            <h3>Cezaevinde Geçirmesi Gereken Süre:</h3>
+            <p><strong>Denetimli Serbestlikten Faydalanabileceği süre:</strong> ${adjustedYearDays} <small>(${subtractionYears} yıl × 365 - ${supervisionDays} denetim günü)</small></p>
+            <p><strong>Mahsup:</strong> ${prisonDays} <small>(zaten hesaplanan toplam günden düşüldü)</small></p>
+            <p><strong>Denetimden faydalanabileceği süre teyit:</strong> ${totalDaysToSubtract}</p>
+            <p><strong>Denetim Tahliye Tarihi:</strong> <span style="font-weight: bold; font-size: 18px;">${finalDateString}</span></p>
+            <p><strong>Denetimli Serbestliğe Nakil Olabilmesi İçin Cezaevinde Geçirmesi Gereken Süre:</strong> ${comparisonResult}</p>
             </div>
         `;
     }
